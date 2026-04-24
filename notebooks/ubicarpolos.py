@@ -10,6 +10,37 @@ import numpy as np
 import control as ctrl
 
 
+def _poly_to_latex(coefs):
+    """Convierte una lista de coeficientes [a_n, a_{n-1}, ..., a_0] a string LaTeX."""
+    n = len(coefs) - 1
+    terms = []
+    for i, c in enumerate(coefs):
+        potencia = n - i
+        if c == 0:
+            continue
+        # Formatear coeficiente
+        if c == int(c):
+            c_str = str(int(c))
+        else:
+            c_str = f'{c:g}'
+        # Formatear término
+        if potencia == 0:
+            term = c_str
+        elif potencia == 1:
+            term = f'{c_str}\\,s' if c != 1 else 's'
+        else:
+            term = f'{c_str}\\,s^{{{potencia}}}' if c != 1 else f's^{{{potencia}}}'
+        terms.append(term)
+    return ' + '.join(terms)
+
+def tf_to_latex(T):
+    """Convierte una función de transferencia de la librería control a string LaTeX."""
+    num = T.num[0][0].tolist()
+    den = T.den[0][0].tolist()
+    num_str = _poly_to_latex(num)
+    den_str = _poly_to_latex(den)
+    return f'T(s) = \\dfrac{{{num_str}}}{{{den_str}}}'
+
 
 def calcular_itae(orden=3, omega=1, tipo="p"):
     """

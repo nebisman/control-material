@@ -11,7 +11,6 @@ import control as ctrl
 
 
 
-
 def calcular_itae(orden=3, omega=1, tipo="p"):
     """
     Calcula la función de transferencia ITAE óptima.
@@ -81,6 +80,8 @@ def calcular_itae(orden=3, omega=1, tipo="p"):
 
     T = ctrl.tf(num, den)
     return T
+
+
 
 def asigne_polos(planta, polos):
     """

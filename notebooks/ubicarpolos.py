@@ -10,6 +10,78 @@ import numpy as np
 import control as ctrl
 
 
+
+
+def calcular_itae(orden=3, omega=1, tipo="p"):
+    """
+    Calcula la función de transferencia ITAE óptima.
+
+    Parámetros:
+        orden : int
+            Orden de la función de transferencia (1-6 para tipo 'p', 2-6 para tipo 'v'). Default 3.
+        omega : float
+            Frecuencia natural del sistema. Default 1.
+        tipo : str
+            'p' para cero error de posición (entrada escalón).
+            'v' para cero error de velocidad (entrada rampa).
+            Default 'p'.
+
+    Retorna:
+        T : control.TransferFunction
+            Función de transferencia ITAE óptima.
+    """
+
+    # Coeficientes ITAE óptimos para entrada escalón (tipo "p")
+    # Denominador: s^n + a[0]*omega*s^{n-1} + a[1]*omega^2*s^{n-2} + ... + omega^n
+    coef_p = {
+        1: [],
+        2: [1.4],
+        3: [1.75, 2.15],
+        4: [2.1, 3.4, 2.7],
+        5: [2.8, 5.0, 5.5, 3.4],
+        6: [3.25, 6.60, 8.60, 7.45, 3.95]
+    }
+
+    # Coeficientes ITAE óptimos para entrada rampa (tipo "v")
+    coef_v = {
+        2: [3.2],
+        3: [1.75, 3.25],
+        4: [2.41, 4.93, 5.14],
+        5: [2.19, 6.50, 6.30, 5.24],
+        6: [3.58, 8.55, 13.0, 11.7, 6.60]
+    }
+
+    if tipo == "p":
+        if orden not in coef_p:
+            raise ValueError(f"Orden {orden} no soportado para tipo 'p'. Use 1-6.")
+        coefs = coef_p[orden]
+    elif tipo == "v":
+        if orden not in coef_v:
+            raise ValueError(f"Orden {orden} no soportado para tipo 'v'. Use 2-6.")
+        coefs = coef_v[orden]
+    else:
+        raise ValueError("Tipo debe ser 'p' o 'v'")
+
+    # Construir denominador:
+    # s^n + a[0]*omega*s^{n-1} + a[1]*omega^2*s^{n-2} + ... + omega^n
+    den = [1.0]
+    for i, a in enumerate(coefs):
+        den.append(a * omega**(i + 1))
+    den.append(omega**orden)
+
+    # Construir numerador
+    if tipo == "p":
+        # Numerador = omega^n (ganancia unitaria en DC)
+        num = [omega**orden]
+    else:
+        # Para tipo "v": num = a1*omega^{n-1}*s + omega^n
+        # donde a1 es el coeficiente del término en s del denominador
+        a1 = coefs[-1]
+        num = [a1 * omega**(orden - 1), omega**orden]
+
+    T = ctrl.tf(num, den)
+    return T
+
 def asigne_polos(planta, polos):
     """
     Calcula un controlador K(s) por asignación de polos con realimentación unitaria.

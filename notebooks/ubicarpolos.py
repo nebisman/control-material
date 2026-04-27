@@ -4,6 +4,7 @@ Diseño de controladores por asignación de polos usando la matriz de Sylvester.
 
 Equivalente en Python de la función asigne_polos.jl (Julia/ControlSystems).
 Dependencias: numpy, control (python-control)
+Leonardo Bermeo
 """
 
 import numpy as np

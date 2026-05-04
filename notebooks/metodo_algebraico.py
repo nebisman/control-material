@@ -201,7 +201,7 @@ def asigne_polos(planta, polos):
     Gur = ctrl.minreal(T / planta)
     S = ctrl.minreal(ctrl.tf(1, 1) - T)
 
-    return K, T, Gur, S, ind_error
+    return K, T, Gur 
 
 
 

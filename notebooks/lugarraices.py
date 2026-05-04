@@ -139,9 +139,6 @@ def hacerLugarRaices(G, SP_max=0.05, tee_max=5, tr_max=1):
 
 
 
-
-
-
 #s = ctrl.tf('s')
 #G = 182.27 / (s * (s + 2.28) * (s + 3.664))
 #hacerLugarRaices(G, SP_max=0.05, tee_max=5, tr_max=1)

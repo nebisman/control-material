@@ -195,7 +195,7 @@ def asigne_polos(planta, polos):
 
     # --- Construir funciones de transferencia ---------------------------------
     C = ctrl.tf(X, Y)
-    T = ctrl.feedback(K * planta)
+    T = ctrl.feedback(C * planta)
     T = ctrl.minreal(T)
     Gur = ctrl.minreal(T / planta)
 

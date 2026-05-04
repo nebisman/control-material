@@ -319,9 +319,7 @@ def dise_2p(P, T, polos_obs):
 # ──────────────────────────────────────────────
 # Ejemplo de uso
 # ──────────────────────────────────────────────
-# ──────────────────────────────────────────────
-# Ejemplo de uso
-# ──────────────────────────────────────────────
+
 if __name__ == "__main__":
     # Planta de ejemplo: P = 1 / (s^2 + 3s + 2)
     P = ctrl.tf([400], [1, 4, 0])
@@ -335,7 +333,6 @@ if __name__ == "__main__":
     C2p, Tcl, Gur = dise_2p(P, T, polos_obs)
 
     print("=== Controlador de dos parámetros ===\n")
-    print("Kr (pre-filtro):")
     print(C2p)
     print("\nFunción de lazo cerrado Tcl:")
     print(Tcl)

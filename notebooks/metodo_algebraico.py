@@ -117,7 +117,7 @@ def calcular_itae(orden=3, omega=1, tipo="p"):
 
 def asigne_polos(planta, polos):
     """
-    Calcula un controlador K(s) por asignación de polos con realimentación unitaria.
+    Calcula un controlador C(s) por asignación de polos con realimentación unitaria.
 
     Parámetros
     ----------
@@ -128,11 +128,10 @@ def asigne_polos(planta, polos):
 
     Retorna
     -------
-    K  : control.TransferFunction  – Controlador.
+    C  : control.TransferFunction  – Controlador.
     T  : control.TransferFunction  – Función de transferencia en lazo cerrado.
-    Gur: control.TransferFunction  – Transferencia de control  u/r = T/P.
-    S  : control.TransferFunction  – Función de sensibilidad  S = 1 − T.
-    ind_error : int                – 0 = éxito, 1 = polos insuficientes.
+    Gur: control.TransferFunction  – Transferencia de control  U/R = T/G.
+
     """
 
     # --- Datos de la planta ---------------------------------------------------
@@ -195,13 +194,12 @@ def asigne_polos(planta, polos):
         )
 
     # --- Construir funciones de transferencia ---------------------------------
-    K = ctrl.tf(X, Y)
+    C = ctrl.tf(X, Y)
     T = ctrl.feedback(K * planta)
     T = ctrl.minreal(T)
     Gur = ctrl.minreal(T / planta)
-    S = ctrl.minreal(ctrl.tf(1, 1) - T)
 
-    return K, T, Gur 
+    return C, T, Gur 
 
 
 
@@ -225,14 +223,13 @@ def dise_2p(P, T, polos_obs):
 
     Retorna
     -------
-    Kr : control.TransferFunction
-        Controlador de referencia (pre-filtro).
-    Ky : control.TransferFunction
-        Controlador de realimentación.
-    Tcl : control.TransferFunction
+    C2p : control.TransferFunction
+        Controlador de dos parametros
+
+    T : control.TransferFunction
         Función de transferencia de lazo cerrado resultante.
     Gur : control.TransferFunction
-        Función de transferencia de la señal de control (T / P).
+        Función de transferencia de la señal de control (T / G).
     """
     polos_obs = np.array(polos_obs, dtype=complex)
     m = len(polos_obs)

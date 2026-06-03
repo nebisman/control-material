@@ -83,7 +83,7 @@ sys = ss(A, B, C, D)
 #    Wr = [B, AB, A²B, ..., Aⁿ⁻¹B]  (matriz de controlabilidad)
 # ------------------------------------------------------------
 Wr = ctrb(sys)          
-
+rank_Wr = rank(Wr)
 
 # --------------------------------------------------------
     # 5. Diseño del controlador LQR

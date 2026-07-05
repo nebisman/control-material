@@ -96,6 +96,7 @@ let
   
     hline!(p1, [0]; ls=:dash, c=:gray, label="0 dB")
     vline!(p1, [ωgc]; ls=:dot, c=:orange, label="")
+    vline!(p1, [ω180]; ls=:dot, c=:red, label="ω cruce fase")
 
 
   
@@ -112,6 +113,7 @@ let
 
     hline!(p2, [-180]; ls=:dash, c=:gray, label="-180°")
     vline!(p2, [ω180]; ls=:dot, c=:red, label="ω cruce fase")
+    vline!(p2, [ωgc]; ls=:dot, c=:orange, label="")
     scatter!(p2, [ωgc], [-180 + PM]; c=:orange, ms=5, label="")   # margen de fase
     scatter!(p2,[ω180], [-180] ; c=:red, ms=5, label="")
     annotate!(p2, ωgc, -180 + PM,

@@ -87,8 +87,10 @@ Margen de fase  ``PM`` [°] = $(@bind PM Slider(1.0:1.0:80.0, default=30.0, show
 # ╔═╡ b6000000-0000-0000-0000-000000000006
 begin
     PMrad  = deg2rad(PM)
-    φc     = -π + PMrad + atan(ωgc/a) + ωgc*d          # fase requerida del PI [rad]
-    Cmag   = sqrt(ωgc^2 + a^2)/b                        # |C(jωgc)| = 1/|G(jωgc)|
+    φc     = -π + PMrad + atan(ωgc/a) + ωgc*d    
+    φc_deg = rad2deg(φc)                    # fase requerida del PI [rad]
+    φc = clamp(φc,-π/2,0)
+    Cmag   = sqrt(ωgc^2 + a^2)/b            # |C(jωgc)| = 1/|G(jωgc)|
     kp     = Cmag*cos(φc)
     ki     = -ωgc*Cmag*sin(φc)
     φc_deg = rad2deg(φc)
@@ -109,7 +111,6 @@ begin
     Gnd = b/(s + a)                 # planta sin retardo
     G   = Gnd*delay(d)              # planta con retardo EXACTO (para frecuencia)
     L   = C*G                       # lazo abierto exacto
-
     # Aproximación racional (Padé orden 4) del retardo SOLO para la simulación temporal
     Tpade = feedback(C*Gnd*pade(d, 4));
 end

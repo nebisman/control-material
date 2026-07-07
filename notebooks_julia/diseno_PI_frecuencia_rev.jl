@@ -35,7 +35,7 @@ $$C(s) = \dfrac{k_p\,s + k_i}{s} = k_p + \dfrac{k_i}{s}, \qquad
 G(s) = \dfrac{b}{s+a}\,e^{-d\,s}, \qquad
 L(s) = C(s)\,G(s)$$
 
-El diseño calcula $k_p$ y $k_i$ para imponer una **frecuencia de cruce de ganancia** $\omega_{gc}$ y un **margen de fase** $PM$ elegidos con los sliders.
+El diseño calcula $k_p$ y $k_i$ para imponer una **frecuencia de cruce de ganancia** $\omega_{gc}$ y un **margen de fase** $\phi_m$ elegidos con los sliders.
 """
 
 # ╔═╡ b2000000-0000-0000-0000-000000000002
@@ -44,18 +44,18 @@ md"""
 
 Se imponen en $\omega=\omega_{gc}$ las condiciones de **magnitud** y **fase**:
 
-$$|L(j\omega_{gc})| = 1, \qquad \angle L(j\omega_{gc}) = -180^\circ + PM$$
+$$|L(j\omega_{gc})| = 1, \qquad \angle L(j\omega_{gc}) = -180^\circ + \phi_m$$
 
 Con
-$\angle G(j\omega) = -\arctan(\omega/a) - \omega d$,
+$\angle G(j\omega) = -\arctan(\omega/a) - \omega \cdot d$,
 $\;|G(j\omega)| = b/\sqrt{\omega^2+a^2}$,
 $\;\angle C(j\omega) = -\arctan\!\big(k_i/(\omega k_p)\big)$
-y $|C(j\omega)| = \sqrt{k_p^2 + (k_i/\omega)^2}$.
+y $|C(j\omega)| = \tfrac{1}{|G(j\omega)|}$.
 
 La fase que debe aportar el controlador es
 
-$$\varphi_c \equiv \angle C(j\omega_{gc}) = -180^\circ + PM - \angle G(j\omega_{gc})
-= -180^\circ + PM + \arctan\!\tfrac{\omega_{gc}}{a} + \omega_{gc}\,d.$$
+$$\varphi_c \equiv \angle C(j\omega_{gc}) = -180^\circ + \phi_m - \angle G(j\omega_{gc})
+= -180^\circ + \phi_m + \arctan\!\tfrac{\omega_{gc}}{a} + \omega_{gc}\,d.$$
 
 Como $|C(j\omega_{gc})| = 1/|G(j\omega_{gc})| = \sqrt{\omega_{gc}^2+a^2}\,/\,b$ y descomponiendo
 $C=k_p - j\,k_i/\omega$ en parte real e imaginaria ($k_p=|C|\cos\varphi_c$, $\,k_i/\omega=-|C|\sin\varphi_c$):
@@ -67,34 +67,41 @@ k_i = -\,\omega_{gc}\,\frac{\sqrt{\omega_{gc}^2+a^2}}{b}\sin\varphi_c\;}$$
 (un PI sólo aporta fase entre $-90^\circ$ y $0^\circ$).
 """
 
-# ╔═╡ b4000000-0000-0000-0000-000000000004
-begin
-    b = 2310.3    # ganancia de la planta
-    a = 3.13    # polo de la planta
-    d = 0.02   # retardo [s]
-    md"Parámetros conocidos:  b = $(b),  a = $(a),  d = $(d) s."
-end
-
-# ╔═╡ b5000000-0000-0000-0000-000000000005
+# ╔═╡ 5cb111ad-5e3b-45d2-be76-b075cf9b384d
 md"""
 ## Especificaciones de diseño (ajustables)
 
 Frecuencia de cruce de ganancia  ``\omega_{gc}`` [rad/s] = $(@bind ωgc Slider(2:0.1:20.0, default=5.0, show_value=true))
 
-Margen de fase  ``PM`` [°] = $(@bind PM Slider(1.0:1.0:80.0, default=30.0, show_value=true))
+Margen de fase  ``\phi_m`` [°] = $(@bind ϕm Slider(1.0:1.0:80.0, default=30.0, show_value=true))
+
+Retardo ``d`` [milisegundos] = $(@bind d Slider(10.0:1.0:100.0, default=10, show_value=true))
+
 """
+
+# ╔═╡ b4000000-0000-0000-0000-000000000004
+begin
+    b = 2310.3    # ganancia de la planta
+    a = 3.13    # polo de la planta
+    s   = tf("s")   
+    Gnd = b/(s + a)  
+    D = d/1000.0
+    G   = Gnd*delay(D)   
+    D
+end
 
 # ╔═╡ b6000000-0000-0000-0000-000000000006
 begin
-    PMrad  = deg2rad(PM)
-    φc     = -π + PMrad + atan(ωgc/a) + ωgc*d    
+    ϕmrad  = deg2rad(ϕm)
+    magG, phiG = bode(G, [ωgc])
+    magG, phiG =  magG[1], phiG[1]
+    φc     = -π + ϕmrad - deg2rad(phiG) 
     φc_deg = rad2deg(φc)                    # fase requerida del PI [rad]
     φc = clamp(φc,-π/2,0)
-    Cmag   = sqrt(ωgc^2 + a^2)/b            # |C(jωgc)| = 1/|G(jωgc)|
-    kp     = Cmag*cos(φc)
-    ki     = -ωgc*Cmag*sin(φc)
+    kp     = cos(φc)/magG
+    ki     = -ωgc*sin(φc)/magG
     φc_deg = rad2deg(φc)
-    factible = (-90.0 < φc_deg < 0.0) && (kp > 0) && (ki > 0)
+    factible = (-90.0 < φc_deg < 0.0) && (kp > 0) && (ki > 0)  
 end
 
 # ╔═╡ b7000000-0000-0000-0000-000000000007
@@ -102,17 +109,15 @@ factible ?
     md"""✅ **Diseño factible.**  $\varphi_c$ = $(round(φc_deg, digits=2))°  ⟹  **kp = $(round(kp, digits=4))**, **ki = $(round(ki, digits=4))**.""" :
     md"""⚠️ **Combinación no factible con un PI de ganancias positivas.**
     La fase requerida es $\varphi_c$ = $(round(φc_deg, digits=2))°, fuera de (−90°, 0°).
-    Aumente $\omega_{gc}$ y/o $PM$.  (Cálculo: kp = $(round(kp, digits=4)), ki = $(round(ki, digits=4)).)"""
+    Aumente $\omega_{gc}$ y/o $\phi_m$.  (Cálculo: kp = $(round(kp, digits=4)), ki = $(round(ki, digits=4)).)"""
 
 # ╔═╡ b8000000-0000-0000-0000-000000000008
 begin
-    s   = tf("s")
-    C   = kp + ki/s                 # controlador PI = (kp·s + ki)/s
-    Gnd = b/(s + a)                 # planta sin retardo
-    G   = Gnd*delay(d)              # planta con retardo EXACTO (para frecuencia)
+    
+    C   = kp + ki/s                
     L   = C*G                       # lazo abierto exacto
     # Aproximación racional (Padé orden 4) del retardo SOLO para la simulación temporal
-    Tpade = feedback(C*Gnd*pade(d, 4));
+    Tpade = feedback(C*Gnd*pade(D, 4));
 end
 
 # ╔═╡ b9000000-0000-0000-0000-000000000009
@@ -140,12 +145,12 @@ begin
     end
 
     # Margen de ganancia: frecuencia de cruce de fase (∠L = -180°)
-    ωpc  = _cross(w, phL, -180.0)
-    GMdB = isnan(ωpc) ? Inf : -20*log10(abs(freqresp(L, [ωpc])[1]))
 
-    # Verificación (deben coincidir con los sliders por construcción)
-    PM_check = 180.0 + rad2deg(angle(freqresp(L, [ωgc])[1]))
-
+    w180, gm, wgc,  ϕm_check = margin(L)
+    ϕm_check = ϕm_check[1]
+    ωpc  = w180[1]
+    gm= gm[1]
+    GMdB = 20*log10(gm)
     # Pico de resonancia Mt de T
     iMt  = argmax(magTdB)
     MtdB = magTdB[iMt];  ωMt = w[iMt];  Mt = 10^(MtdB/20)
@@ -186,13 +191,13 @@ let
 
     # ---------- Fase de L ----------
     pLp = plot(w, phL; xscale=:log10, lw=2, c="#00aad4", label="∠L(jω)",
-               ylims=(-270,90),
+               ylims=(-300,90),
                xlabel="ω [rad/s]", ylabel="Fase [°]", grid=true, legend=:bottomleft)
     hline!(pLp, [-180]; ls=:dash, c=:gray, label="−180°")
     vline!(pLp, [ωgc]; ls=:dot, c=:orange, label="")
-    plot!(pLp, [ωgc, ωgc], [-180, -180+PM]; c=:orange, lw=2, label="")
-    scatter!(pLp, [ωgc], [-180+PM]; c=:orange, ms=6, label="PM = $(round(PM_check,digits=2))°")
-    annotate!(pLp, ωgc, -180+PM/2, text("  PM=$(round(PM_check,digits=1))°", 8, :left, :orange))
+    plot!(pLp, [ωgc, ωgc], [-180, -180+ϕm]; c=:orange, lw=2, label="")
+    scatter!(pLp, [ωgc], [-180+ϕm]; c=:orange, ms=6, label="ϕm = $(round(ϕm_check,digits=2))°")
+    annotate!(pLp, ωgc, -180+ϕm/2, text("  ϕm=$(round(ϕm_check,digits=2))°", 8, :left, :orange))
     if isfinite(GMdB)
         vline!(pLp, [ωpc]; ls=:dot, c=:red, label="")
         scatter!(pLp, [ωpc], [-180]; c=:red, ms=6, label="")
@@ -231,7 +236,7 @@ md"""
 
 | Métrica | Símbolo | Valor |
 |:--|:--:|:--:|
-| Margen de fase | $PM$ | $(round(PM_check, digits=2)) ° |
+| Margen de fase | $\phi_m$ | $(round(ϕm_check, digits=2)) ° |
 | Margen de ganancia | $GM$ | $(round(GMdB, digits=2)) dB |
 | Frecuencia de cruce de ganancia | $\omega_{gc}$ | $(round(ωgc, digits=3)) rad/s |
 | Ancho de banda (−3 dB) de $T$ | $\omega_{B}$ | $(round(ωB, digits=3)) rad/s |
@@ -241,15 +246,15 @@ md"""
 """
 
 # ╔═╡ Cell order:
-# ╟─b1000000-0000-0000-0000-000000000001
+# ╠═b1000000-0000-0000-0000-000000000001
 # ╠═b3000000-0000-0000-0000-000000000003
-# ╟─b2000000-0000-0000-0000-000000000002
+# ╠═b2000000-0000-0000-0000-000000000002
+# ╟─5cb111ad-5e3b-45d2-be76-b075cf9b384d
 # ╠═b4000000-0000-0000-0000-000000000004
-# ╠═b5000000-0000-0000-0000-000000000005
 # ╠═b6000000-0000-0000-0000-000000000006
 # ╠═b7000000-0000-0000-0000-000000000007
-# ╠═b8000000-0000-0000-0000-000000000008
-# ╟─b9000000-0000-0000-0000-000000000009
+# ╟─b8000000-0000-0000-0000-000000000008
+# ╠═b9000000-0000-0000-0000-000000000009
 # ╟─ba000000-0000-0000-0000-000000000010
-# ╟─bb000000-0000-0000-0000-000000000011
+# ╠═bb000000-0000-0000-0000-000000000011
 # ╟─bc000000-0000-0000-0000-000000000012

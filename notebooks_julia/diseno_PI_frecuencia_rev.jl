@@ -102,6 +102,7 @@ begin
     ki     = -ωgc*sin(φc)/magG
     φc_deg = rad2deg(φc)
     factible = (-90.0 < φc_deg < 0.0) && (kp > 0) && (ki > 0)  
+    print(magG, " ", phiG)
 end
 
 # ╔═╡ b7000000-0000-0000-0000-000000000007
@@ -245,6 +246,13 @@ md"""
 | Relación | $\omega_{B}/\omega_{gc}$ | $(round(ωB_gc, digits=3)) |
 """
 
+# ╔═╡ 10361dd7-cbd8-4978-91f7-b90b6a35e943
+begin
+	C1, kp1, ki1, fig1, CF1 = loopshapingPI(G, 10;  phasemargin=30, form=:standard, doplot=false)
+	kp1,ki1
+	
+end
+
 # ╔═╡ Cell order:
 # ╠═b1000000-0000-0000-0000-000000000001
 # ╠═b3000000-0000-0000-0000-000000000003
@@ -258,3 +266,4 @@ md"""
 # ╟─ba000000-0000-0000-0000-000000000010
 # ╠═bb000000-0000-0000-0000-000000000011
 # ╟─bc000000-0000-0000-0000-000000000012
+# ╠═10361dd7-cbd8-4978-91f7-b90b6a35e943

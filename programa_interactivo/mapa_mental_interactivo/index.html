@@ -1,0 +1,825 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>Mapa mental — Organización del curso de control</title>
+<style>
+:root{
+  --bg:#f7f4ee;
+  --canvas-dot:#00000012;
+  --card-bg:#ffffff;
+  --card-border:#e4ddd0;
+  --text:#2c2b29;
+  --text-dim:#6b665c;
+  --root-bg:#2c2b29;
+  --root-text:#ffffff;
+  --panel-bg:#ffffffee;
+  --panel-border:#e4ddd0;
+  --shadow:0 2px 6px rgba(44,43,41,.12), 0 1px 2px rgba(44,43,41,.08);
+  --accent-semanas:210 55% 42%;
+  --accent-lab:168 48% 34%;
+  --edge:#c9c2b2;
+  --highlight:#ffe08a;
+  --dim-opacity:.22;
+}
+:root[data-theme="dark"]{
+  --bg:#181816;
+  --canvas-dot:#ffffff10;
+  --card-bg:#242320;
+  --card-border:#3a382f;
+  --text:#f1ede3;
+  --text-dim:#a9a396;
+  --root-bg:#f1ede3;
+  --root-text:#1c1b19;
+  --panel-bg:#242320ee;
+  --panel-border:#3a382f;
+  --shadow:0 2px 8px rgba(0,0,0,.45);
+  --edge:#4a473d;
+  --highlight:#ad8a1f;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#181816;
+    --canvas-dot:#ffffff10;
+    --card-bg:#242320;
+    --card-border:#3a382f;
+    --text:#f1ede3;
+    --text-dim:#a9a396;
+    --root-bg:#f1ede3;
+    --root-text:#1c1b19;
+    --panel-bg:#242320ee;
+    --panel-border:#3a382f;
+    --shadow:0 2px 8px rgba(0,0,0,.45);
+    --edge:#4a473d;
+    --highlight:#ad8a1f;
+  }
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  overflow:hidden;
+  overscroll-behavior:none;
+}
+#viewport{
+  position:absolute;
+  inset:0;
+  overflow:hidden;
+  touch-action:none;
+  cursor:grab;
+  background-image:radial-gradient(var(--canvas-dot) 1.4px, transparent 1.4px);
+  background-size:26px 26px;
+}
+#viewport.grabbing{cursor:grabbing}
+#canvas{
+  position:absolute;
+  left:0;top:0;
+  will-change:transform;
+}
+#edges{
+  position:absolute;
+  left:-100000px;top:-100000px;
+  width:200000px;height:200000px;
+  overflow:visible;
+  pointer-events:none;
+}
+.node{
+  position:absolute;
+  left:0;top:0;
+  width:max-content;
+  will-change:transform;
+  border-radius:12px;
+  padding:8px 14px;
+  font-size:13.5px;
+  line-height:1.32;
+  box-shadow:var(--shadow);
+  border:1px solid var(--card-border);
+  background:var(--card-bg);
+  color:var(--text);
+  user-select:none;
+  cursor:pointer;
+  transition:opacity .25s ease, box-shadow .15s ease, background-color .3s ease, color .3s ease, border-color .3s ease;
+  white-space:normal;
+  word-break:break-word;
+}
+.node:hover{box-shadow:0 4px 12px rgba(0,0,0,.18)}
+.node.depth-0{
+  background:var(--root-bg);
+  color:var(--root-text);
+  font-weight:700;
+  font-size:16px;
+  border:none;
+  border-radius:16px;
+  padding:14px 22px;
+  text-align:center;
+}
+.node.depth-1{
+  color:#fff;
+  font-weight:700;
+  font-size:14.5px;
+  border:none;
+  padding:10px 18px;
+  text-align:center;
+}
+.node.depth-2{
+  font-weight:600;
+  border-left:4px solid hsl(var(--hue));
+  background:hsl(var(--hue) / 10%);
+}
+:root[data-theme="dark"] .node.depth-2, :root:not([data-theme="light"]) .node.depth-2{
+  background:hsl(var(--hue) / 16%);
+}
+.node.depth-3{ border-left:3px solid hsl(var(--hue) / 65%); }
+.node.depth-4{ border-left:3px solid hsl(var(--hue) / 45%); font-size:13px; color:var(--text-dim); }
+.node.match{ background:var(--highlight) !important; color:#2c2b29 !important; }
+.node.dimmed{ opacity:var(--dim-opacity); }
+.node .toggle{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  width:16px;height:16px;
+  margin-right:4px;
+  border-radius:4px;
+  background:rgba(0,0,0,.08);
+  font-size:11px;
+  vertical-align:middle;
+  flex:none;
+}
+.node-inner{display:flex; align-items:flex-start; gap:2px}
+.edge-path{
+  fill:none;
+  stroke:var(--edge);
+  stroke-width:2;
+  transition:opacity .25s ease, stroke .3s ease;
+}
+.edge-path.dimmed{ opacity:var(--dim-opacity); }
+
+#topbar{
+  position:absolute;
+  top:14px; left:14px; right:14px;
+  z-index:10;
+  display:flex;
+  align-items:center;
+  gap:10px;
+  flex-wrap:wrap;
+  pointer-events:none;
+}
+#topbar > *{ pointer-events:auto; }
+.panel{
+  background:var(--panel-bg);
+  border:1px solid var(--panel-border);
+  border-radius:12px;
+  box-shadow:var(--shadow);
+  backdrop-filter:blur(6px);
+}
+#title-box{
+  padding:9px 16px;
+  font-weight:700;
+  font-size:14.5px;
+  color:var(--text);
+  white-space:nowrap;
+}
+#title-box small{
+  display:block;
+  font-weight:400;
+  color:var(--text-dim);
+  font-size:11.5px;
+  margin-top:2px;
+}
+#search-box{
+  display:flex;
+  align-items:center;
+  gap:6px;
+  padding:6px 12px;
+  flex:1;
+  min-width:160px;
+  max-width:340px;
+}
+#search-box input{
+  border:none;
+  outline:none;
+  background:transparent;
+  color:var(--text);
+  font-size:13.5px;
+  width:100%;
+}
+#search-box svg{ flex:none; opacity:.55 }
+.btn{
+  border:none;
+  background:transparent;
+  color:var(--text);
+  font-size:13px;
+  font-weight:600;
+  padding:9px 13px;
+  border-radius:10px;
+  cursor:pointer;
+  white-space:nowrap;
+}
+.btn:hover{ background:rgba(127,127,127,.14); }
+#controls{ display:flex; gap:2px; padding:3px; }
+#legend{
+  position:absolute;
+  bottom:14px; left:14px;
+  z-index:10;
+  padding:10px 14px;
+  font-size:12px;
+  color:var(--text-dim);
+  display:flex;
+  gap:16px;
+}
+#legend .item{ display:flex; align-items:center; gap:6px; }
+#legend .dot{ width:10px; height:10px; border-radius:50%; }
+#hint{
+  position:absolute;
+  bottom:14px; right:14px;
+  z-index:10;
+  padding:8px 12px;
+  font-size:11.5px;
+  color:var(--text-dim);
+  max-width:220px;
+  text-align:right;
+}
+#zoomctl{
+  position:absolute;
+  bottom:14px;
+  left:50%;
+  transform:translateX(-50%);
+  z-index:10;
+  display:flex;
+  gap:2px;
+  padding:3px;
+}
+@media (max-width:720px){
+  #hint{ display:none; }
+  #title-box{ display:none; }
+  #legend{ font-size:10.5px; gap:10px; padding:7px 10px;}
+}
+</style>
+</head>
+<body>
+
+<div id="viewport">
+  <div id="canvas">
+    <svg id="edges"><g id="edges-g"></g></svg>
+    <div id="nodes"></div>
+  </div>
+</div>
+
+<div id="topbar">
+  <div class="panel" id="title-box">Organización del curso de control
+    <small>Mapa mental interactivo</small>
+  </div>
+  <div class="panel" id="search-box">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+    <input id="search" type="text" placeholder="Buscar en el mapa…" autocomplete="off">
+  </div>
+  <div class="panel" id="controls">
+    <button class="btn" id="btn-expand">Expandir todo</button>
+    <button class="btn" id="btn-collapse">Colapsar todo</button>
+    <button class="btn" id="btn-fit">Centrar</button>
+    <button class="btn" id="btn-theme">🌓</button>
+  </div>
+</div>
+
+<div id="legend" class="panel">
+  <div class="item"><span class="dot" style="background:hsl(210 55% 42%)"></span>Semanas (teoría)</div>
+  <div class="item"><span class="dot" style="background:hsl(168 48% 34%)"></span>Laboratorio</div>
+</div>
+
+<div id="hint" class="panel">Clic en un nodo para expandir/colapsar · arrastra para mover · rueda o pellizco para zoom</div>
+
+<div id="zoomctl" class="panel">
+  <button class="btn" id="btn-zoom-out">−</button>
+  <button class="btn" id="btn-zoom-in">+</button>
+</div>
+
+<script>
+"use strict";
+
+/* ---------------------------------------------------------------
+   1. DATA — mirrors programa_interactivo/mapa_mental_control.mm
+   ------------------------------------------------------------- */
+const DATA = {
+  t: "Organización del curso de control",
+  children: [
+    {
+      t: "Semanas", side: "right", hue: 210,
+      children: [
+        { t: "Semana 1", children: [
+          { t: "Introducción" },
+          { t: "Acciones básicas de control" },
+        ]},
+        { t: "Semana 2", children: [
+          { t: "Estabilidad de sistemas" },
+          { t: "Respuesta de sistemas de primero y segundo orden" },
+          { t: "Diseño de controladores PI/PID" },
+          { t: "Efectos de la realimentación", collapsed: true, children: [
+            { t: "Perturbaciones" },
+            { t: "Robustez ante incertidumbre" },
+            { t: "Seguimiento de referencias" },
+          ]},
+        ]},
+        { t: "Semana 3", collapsed: true, children: [
+          { t: "Modelos de sistemas lineales" },
+          { t: "Linealización de sistemas no lineales" },
+        ]},
+        { t: "Semana 4", children: [
+          { t: "Modelado e identificación de sistemas lineales" },
+          { t: "Error en estado estacionario de sistemas de control" },
+        ]},
+        { t: "Semana 5", children: [
+          { t: "Tipos de sistemas según el error de estado estacionario y principio del modelo interno" },
+          { t: "Lugar de las raíces: análisis de estabilidad y región de diseño." },
+        ]},
+        { t: "Semana 6", children: [
+          { t: "Modelos prototipo de respuesta transitoria" },
+          { t: "Controladores algebraicos de 1GDL" },
+        ]},
+        { t: "Semana 7", children: [
+          { t: "Controladores algebraicos de 2GDL" },
+          { t: "Implementación digital de controladores" },
+        ]},
+        { t: "Semana 8", children: [
+          { t: "Parcial" },
+        ]},
+        { t: "Semana 9", children: [
+          { t: "Espacio de estados en sistemas lineales" },
+          { t: "Realimentación de estado RVE y alcanzabilidad" },
+          { t: "Linealización de modelos no lineales" },
+        ]},
+        { t: "Semana 10", children: [
+          { t: "Control de RVE con acción integral" },
+          { t: "Control LQR" },
+        ]},
+        { t: "Semana 11", children: [
+          { t: "Implementacíon de controladores por RVE" },
+          { t: "Observabilidad" },
+        ]},
+        { t: "Semana 12", children: [
+          { t: "Diseño de obsevadores y filtro de Kalman" },
+          { t: "Repaso de análisis en el dominio de la frecuencia" },
+        ]},
+        { t: "Semana 13", children: [
+          { t: "Criterio de Nyquist. Propiedades de la función de lazo abierto." },
+          { t: "Margenes de estabilidad y relaciones de Bode" },
+        ]},
+        { t: "Semana 14", children: [
+          { t: "Especificaciones en el dominio de la frecuencia" },
+          { t: "Compensadores de adelanto, atraso y adelanto-atraso" },
+        ]},
+        { t: "Semana 14", children: [
+          { t: "Diseño por medio de la conformación de la función de lazo" },
+          { t: "Limitaciones fundamentales en control" },
+        ]},
+        { t: "Semana 15", children: [
+          { t: "Parcial 2 y proyecto" },
+        ]},
+      ]
+    },
+    {
+      t: "Laboratorio", side: "left", hue: 168,
+      children: [
+        { t: "Semana 1", children: [ { t: "Presentación" } ]},
+        { t: "Semana 2", children: [ { t: "Implementación de sistemas de primero y segundo orden" } ]},
+        { t: "Semana 3", children: [ { t: "Observación experimental de la estabilidad de sistemas LTI" } ]},
+        { t: "Semana 4", children: [ { t: "Diseño e implementación de controlador PI para un sistema de primer orden en computación analógica" } ]},
+        { t: "Semana 5", children: [ { t: "Obtención de modelos y control PI y PID para las plataformas del laboratorio" } ]},
+        { t: "Semana 6", children: [ { t: "Control algebraico de 1GDL para las plataformas del laboratorio" } ]},
+        { t: "Semana 7", children: [ { t: "Control algebraico de 2 GDL para las plataformas del laboratorio" } ]},
+        { t: "Semana 8", children: [ { t: "Implementación digital de controladores" } ]},
+        { t: "Semana 9", children: [ { t: "Control por variables de estado robot I" } ]},
+        { t: "Semana 10", children: [ { t: "Control por variables de estado robot II" } ]},
+        { t: "Semana 11", children: [] },
+        { t: "Semana 12", children: [] },
+      ]
+    }
+  ]
+};
+
+/* ---------------------------------------------------------------
+   2. Build tree: assign ids, depth, side, hue, parent refs
+   ------------------------------------------------------------- */
+let idCounter = 0;
+function buildTree(node, depth, side, hue, parent){
+  node.id = "n" + (idCounter++);
+  node.depth = depth;
+  node.side = side;
+  node.hue = hue;
+  node.parent = parent || null;
+  node.children = node.children || [];
+  node.collapsed = !!node.collapsed;
+  node.children.forEach(c => buildTree(c, depth + 1, node.side || side, node.hue || hue, node));
+  return node;
+}
+buildTree(DATA, 0, null, null, null);
+
+const allNodes = [];
+(function flatten(n){ allNodes.push(n); n.children.forEach(flatten); })(DATA);
+
+/* ---------------------------------------------------------------
+   3. DOM creation (persistent per node)
+   ------------------------------------------------------------- */
+const nodesLayer = document.getElementById("nodes");
+const edgesG = document.getElementById("edges-g");
+
+const MAXW = { 0: 280, 1: 170, 2: 210, 3: 220, 4: 220 };
+
+allNodes.forEach(n => {
+  const el = document.createElement("div");
+  el.className = "node depth-" + n.depth;
+  el.style.maxWidth = (MAXW[n.depth] || 220) + "px";
+  if (n.hue != null) el.style.setProperty("--hue", n.hue + " 70% 45%");
+  if (n.depth === 1) el.style.background = `hsl(${n.hue} 55% 40%)`;
+
+  const inner = document.createElement("div");
+  inner.className = "node-inner";
+  const hasChildren = n.children.length > 0;
+  if (hasChildren){
+    const tgl = document.createElement("span");
+    tgl.className = "toggle";
+    tgl.textContent = n.collapsed ? "+" : "–";
+    inner.appendChild(tgl);
+    n._toggleEl = tgl;
+  }
+  const txt = document.createElement("span");
+  txt.textContent = n.t;
+  inner.appendChild(txt);
+  n._textEl = txt;
+  el.appendChild(inner);
+
+  el.addEventListener("click", (e) => {
+    if (draggedFlag) return;
+    if (hasChildren){
+      n.collapsed = !n.collapsed;
+      n._toggleEl.textContent = n.collapsed ? "+" : "–";
+      relayout(true);
+    }
+  });
+
+  n._el = el;
+  nodesLayer.appendChild(el);
+
+  const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+  path.setAttribute("class", "edge-path");
+  n._path = path;
+  if (n.parent) edgesG.appendChild(path);
+});
+
+/* ---------------------------------------------------------------
+   4. Layout algorithm
+   ------------------------------------------------------------- */
+const COL_STEP = 235;
+const VGAP = 14;
+
+function visibleChildren(n){
+  return n.collapsed ? [] : n.children;
+}
+
+// measure natural size (must be visible in DOM, unclipped, to read size)
+function measure(n){
+  n.w = n._el.offsetWidth;
+  n.h = n._el.offsetHeight;
+}
+
+function layoutSubtree(n, y0, sign){
+  measure(n);
+  n.x = sign * (n.depth === 0 ? 0 : n.depth * COL_STEP);
+  const kids = visibleChildren(n);
+  if (kids.length === 0){
+    n.y = y0 + n.h / 2;
+    return n.h + VGAP;
+  }
+  let cursor = y0;
+  let total = 0;
+  kids.forEach(k => {
+    const used = layoutSubtree(k, cursor, sign);
+    cursor += used;
+    total += used;
+  });
+  n.y = (kids[0].y + kids[kids.length - 1].y) / 2;
+  return Math.max(total, n.h + VGAP);
+}
+
+function computeLayout(){
+  measure(DATA);
+  DATA.x = 0;
+  const branches = DATA.children; // [Semanas(right), Laboratorio(left)]
+  branches.forEach(b => {
+    const sign = b.side === "left" ? -1 : 1;
+    layoutSubtree(b, 0, sign);
+  });
+  // center each branch subtree vertically on root (y=0)
+  branches.forEach(b => {
+    const shift = -b.y;
+    shiftSubtree(b, shift);
+  });
+  DATA.y = 0;
+}
+function shiftSubtree(n, dy){
+  n.y += dy;
+  visibleChildren(n).forEach(c => shiftSubtree(c, dy));
+}
+
+/* ---------------------------------------------------------------
+   5. Render (with animated interpolation between layouts)
+   ------------------------------------------------------------- */
+function edgePath(px, py, pw, cx, cy, cw, pside){
+  // pside: 1 = child is to the right of parent, -1 = left
+  const sx = px + pside * (pw / 2);
+  const sy = py;
+  const ex = cx - pside * (cw / 2);
+  const ey = cy;
+  const dx = Math.max(30, Math.abs(ex - sx) * 0.5);
+  return `M ${sx} ${sy} C ${sx + pside*dx} ${sy}, ${ex - pside*dx} ${ey}, ${ex} ${ey}`;
+}
+
+function applyVisibility(){
+  // determine which nodes are currently visible (ancestors all expanded)
+  allNodes.forEach(n => n._visible = true);
+  (function walk(n){
+    visibleChildren(n).forEach(c => { c._visible = true; walk(c); });
+    n.children.forEach(c => { if (n.collapsed) c._visible = false; });
+  })(DATA);
+  DATA._visible = true;
+}
+
+function setNodeTransform(n, x, y){
+  n._el.style.transform = `translate(${x - n.w/2}px, ${y - n.h/2}px)`;
+}
+function setEdgeForNode(n, px, py, pw, x, y, w){
+  if (!n.parent) return;
+  const sign = n.side === "left" ? -1 : 1;
+  n._path.setAttribute("d", edgePath(px, py, pw, x, y, w, sign));
+}
+
+let animFrame = null;
+function relayout(animate){
+  const before = {};
+  allNodes.forEach(n => { before[n.id] = { x: n.x, y: n.y, w: n.w, h: n.h }; });
+
+  computeLayout();
+  applyVisibility();
+
+  allNodes.forEach(n => {
+    n._el.style.display = n._visible ? "" : "none";
+    if (n.parent) n._path.style.display = n._visible && n.parent._visible ? "" : "none";
+  });
+
+  if (!animate){
+    allNodes.forEach(n => {
+      if (!n._visible) return;
+      setNodeTransform(n, n.x, n.y);
+    });
+    allNodes.forEach(n => {
+      if (!n._visible || !n.parent || !n.parent._visible) return;
+      setEdgeForNode(n, n.parent.x, n.parent.y, n.parent.w, n.x, n.y, n.w);
+    });
+    return;
+  }
+
+  const after = {};
+  allNodes.forEach(n => { after[n.id] = { x: n.x, y: n.y, w: n.w, h: n.h }; });
+
+  const dur = 320;
+  const t0 = performance.now();
+  if (animFrame) cancelAnimationFrame(animFrame);
+  function ease(t){ return t<0.5 ? 4*t*t*t : 1-Math.pow(-2*t+2,3)/2; }
+  function frame(now){
+    let t = Math.min(1, (now - t0) / dur);
+    const e = ease(t);
+    allNodes.forEach(n => {
+      if (!n._visible) return;
+      const b = before[n.id] || after[n.id];
+      const a = after[n.id];
+      const x = b.x + (a.x - b.x) * e;
+      const y = b.y + (a.y - b.y) * e;
+      n._curX = x; n._curY = y; n._curW = a.w; n._curH = a.h;
+      setNodeTransform(n, x, y);
+    });
+    allNodes.forEach(n => {
+      if (!n._visible || !n.parent || !n.parent._visible) return;
+      setEdgeForNode(n, n.parent._curX, n.parent._curY, n.parent._curW, n._curX, n._curY, n._curW);
+    });
+    if (t < 1){
+      animFrame = requestAnimationFrame(frame);
+    }
+  }
+  animFrame = requestAnimationFrame(frame);
+}
+
+/* ---------------------------------------------------------------
+   6. Pan / zoom
+   ------------------------------------------------------------- */
+const viewport = document.getElementById("viewport");
+const canvas = document.getElementById("canvas");
+let panX = 0, panY = 0, scale = 1;
+let draggedFlag = false;
+
+function applyTransform(){
+  const vw = viewport.clientWidth, vh = viewport.clientHeight;
+  canvas.style.transform = `translate(${vw/2 + panX}px, ${vh/2 + panY}px) scale(${scale})`;
+}
+window.addEventListener("resize", applyTransform);
+
+const active = new Map();
+let pinchStartDist = null, pinchStartScale = 1;
+let dragStart = null;
+
+viewport.addEventListener("pointerdown", (e) => {
+  active.set(e.pointerId, { x: e.clientX, y: e.clientY });
+  viewport.setPointerCapture(e.pointerId);
+  viewport.classList.add("grabbing");
+  draggedFlag = false;
+  if (active.size === 1){
+    dragStart = { x: e.clientX, y: e.clientY, panX, panY };
+  } else if (active.size === 2){
+    const pts = [...active.values()];
+    pinchStartDist = Math.hypot(pts[0].x - pts[1].x, pts[0].y - pts[1].y);
+    pinchStartScale = scale;
+  }
+});
+viewport.addEventListener("pointermove", (e) => {
+  if (!active.has(e.pointerId)) return;
+  active.set(e.pointerId, { x: e.clientX, y: e.clientY });
+  if (active.size === 1 && dragStart){
+    const dx = e.clientX - dragStart.x, dy = e.clientY - dragStart.y;
+    if (Math.abs(dx) > 3 || Math.abs(dy) > 3) draggedFlag = true;
+    panX = dragStart.panX + dx;
+    panY = dragStart.panY + dy;
+    applyTransform();
+  } else if (active.size === 2 && pinchStartDist){
+    const pts = [...active.values()];
+    const dist = Math.hypot(pts[0].x - pts[1].x, pts[0].y - pts[1].y);
+    scale = Math.min(2.2, Math.max(0.25, pinchStartScale * (dist / pinchStartDist)));
+    applyTransform();
+  }
+});
+function endPointer(e){
+  active.delete(e.pointerId);
+  if (active.size === 0){
+    viewport.classList.remove("grabbing");
+    dragStart = null;
+  }
+  if (active.size < 2) pinchStartDist = null;
+}
+viewport.addEventListener("pointerup", endPointer);
+viewport.addEventListener("pointercancel", endPointer);
+viewport.addEventListener("pointerleave", endPointer);
+
+viewport.addEventListener("wheel", (e) => {
+  e.preventDefault();
+  const rect = viewport.getBoundingClientRect();
+  const cx = e.clientX - rect.left - rect.width/2 - panX;
+  const cy = e.clientY - rect.top - rect.height/2 - panY;
+  const factor = Math.exp(-e.deltaY * 0.0016);
+  const newScale = Math.min(2.2, Math.max(0.25, scale * factor));
+  const ratio = newScale / scale;
+  panX -= cx * (ratio - 1);
+  panY -= cy * (ratio - 1);
+  scale = newScale;
+  applyTransform();
+}, { passive: false });
+
+function zoomBy(factor){
+  const newScale = Math.min(2.2, Math.max(0.25, scale * factor));
+  scale = newScale;
+  applyTransform();
+}
+document.getElementById("btn-zoom-in").addEventListener("click", () => zoomBy(1.2));
+document.getElementById("btn-zoom-out").addEventListener("click", () => zoomBy(1/1.2));
+
+function fitView(){
+  computeLayout();
+  applyVisibility();
+  let minX=Infinity,maxX=-Infinity,minY=Infinity,maxY=-Infinity;
+  allNodes.forEach(n => {
+    if (!n._visible) return;
+    minX = Math.min(minX, n.x - n.w/2);
+    maxX = Math.max(maxX, n.x + n.w/2);
+    minY = Math.min(minY, n.y - n.h/2);
+    maxY = Math.max(maxY, n.y + n.h/2);
+  });
+  const vw = viewport.clientWidth, vh = viewport.clientHeight;
+  const w = maxX - minX, h = maxY - minY;
+  const s = Math.min(2.2, Math.max(0.25, Math.min((vw-80)/w, (vh-80)/h)));
+  scale = s;
+  panX = -((minX + maxX) / 2) * s;
+  panY = -((minY + maxY) / 2) * s;
+  applyTransform();
+}
+document.getElementById("btn-fit").addEventListener("click", () => { relayout(false); fitView(); });
+
+/* ---------------------------------------------------------------
+   7. Expand / collapse all
+   ------------------------------------------------------------- */
+function setAllCollapsed(val){
+  allNodes.forEach(n => {
+    if (n.children.length){
+      n.collapsed = val;
+      if (n._toggleEl) n._toggleEl.textContent = val ? "+" : "–";
+    }
+  });
+  relayout(true);
+}
+document.getElementById("btn-expand").addEventListener("click", () => setAllCollapsed(false));
+document.getElementById("btn-collapse").addEventListener("click", () => setAllCollapsed(true));
+
+/* ---------------------------------------------------------------
+   8. Search
+   ------------------------------------------------------------- */
+function normalize(s){
+  return s.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
+}
+const searchInput = document.getElementById("search");
+let savedCollapsed = null;
+
+searchInput.addEventListener("input", () => {
+  const term = normalize(searchInput.value.trim());
+  allNodes.forEach(n => { n._el.classList.remove("match", "dimmed"); n._path.classList.remove("dimmed"); });
+
+  if (!term){
+    if (savedCollapsed){
+      allNodes.forEach(n => {
+        if (n.id in savedCollapsed){
+          n.collapsed = savedCollapsed[n.id];
+          if (n._toggleEl) n._toggleEl.textContent = n.collapsed ? "+" : "–";
+        }
+      });
+      savedCollapsed = null;
+      relayout(true);
+    }
+    return;
+  }
+
+  if (!savedCollapsed){
+    savedCollapsed = {};
+    allNodes.forEach(n => { savedCollapsed[n.id] = n.collapsed; });
+  }
+
+  const matched = new Set();
+  allNodes.forEach(n => {
+    if (normalize(n.t).includes(term)) matched.add(n);
+  });
+
+  const keep = new Set();
+  matched.forEach(n => {
+    let cur = n;
+    while (cur){ keep.add(cur); cur = cur.parent; }
+  });
+
+  allNodes.forEach(n => {
+    if (n.children.length) n.collapsed = !keep.has(n) ? n.collapsed : false;
+  });
+  // force-expand ancestors of matches, leave other branches as saved
+  allNodes.forEach(n => {
+    if (n.children.length && keep.has(n)) {
+      n.collapsed = false;
+      if (n._toggleEl) n._toggleEl.textContent = "–";
+    }
+  });
+
+  relayout(true);
+
+  requestAnimationFrame(() => {
+    allNodes.forEach(n => {
+      if (!n._visible) return;
+      if (matched.has(n)) n._el.classList.add("match");
+      else if (!keep.has(n)) n._el.classList.add("dimmed");
+    });
+    allNodes.forEach(n => {
+      if (!n._visible || !n.parent) return;
+      if (!keep.has(n) && !matched.has(n)) n._path.classList.add("dimmed");
+    });
+  });
+});
+
+/* ---------------------------------------------------------------
+   9. Theme toggle
+   ------------------------------------------------------------- */
+const root = document.documentElement;
+function currentTheme(){
+  const stored = localStorage.getItem("mm-theme");
+  if (stored) return stored;
+  return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+}
+function applyTheme(t){
+  root.setAttribute("data-theme", t);
+  localStorage.setItem("mm-theme", t);
+}
+applyTheme(currentTheme());
+document.getElementById("btn-theme").addEventListener("click", () => {
+  applyTheme(root.getAttribute("data-theme") === "dark" ? "light" : "dark");
+});
+
+/* ---------------------------------------------------------------
+   10. Init
+   ------------------------------------------------------------- */
+relayout(false);
+fitView();
+</script>
+</body>
+</html>

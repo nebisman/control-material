@@ -404,15 +404,15 @@ const DATA = {
    2. Build tree: assign ids, depth, side, hue, parent refs
    ------------------------------------------------------------- */
 let idCounter = 0;
-function buildTree(node, depth, side, hue, parent){
+function buildTree(node, depth, inheritedSide, inheritedHue, parent){
   node.id = "n" + (idCounter++);
   node.depth = depth;
-  node.side = side;
-  node.hue = hue;
+  node.side = node.side || inheritedSide;
+  node.hue = node.hue != null ? node.hue : inheritedHue;
   node.parent = parent || null;
   node.children = node.children || [];
   node.collapsed = !!node.collapsed;
-  node.children.forEach(c => buildTree(c, depth + 1, node.side || side, node.hue || hue, node));
+  node.children.forEach(c => buildTree(c, depth + 1, node.side, node.hue, node));
   return node;
 }
 buildTree(DATA, 0, null, null, null);
@@ -451,16 +451,8 @@ allNodes.forEach(n => {
   n._textEl = txt;
   el.appendChild(inner);
 
-  el.addEventListener("click", (e) => {
-    if (draggedFlag) return;
-    if (hasChildren){
-      n.collapsed = !n.collapsed;
-      n._toggleEl.textContent = n.collapsed ? "+" : "–";
-      relayout(true);
-    }
-  });
-
   n._el = el;
+  el.__node = n;
   nodesLayer.appendChild(el);
 
   const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
@@ -658,7 +650,24 @@ viewport.addEventListener("pointermove", (e) => {
     applyTransform();
   }
 });
+function toggleNode(n){
+  if (!n || !n.children.length) return;
+  n.collapsed = !n.collapsed;
+  if (n._toggleEl) n._toggleEl.textContent = n.collapsed ? "+" : "–";
+  relayout(true);
+}
+
 function endPointer(e){
+  // Detect a genuine tap (no drag, no pinch) via hit-testing at the release
+  // point rather than relying on the native "click" event: setPointerCapture
+  // on #viewport can retarget the compatibility click event away from the
+  // node the user actually tapped, so we resolve the target ourselves.
+  const wasTap = e.type === "pointerup" && active.size === 1 && !draggedFlag && pinchStartDist === null;
+  if (wasTap){
+    const hit = document.elementFromPoint(e.clientX, e.clientY);
+    const nodeEl = hit && hit.closest(".node");
+    if (nodeEl) toggleNode(nodeEl.__node);
+  }
   active.delete(e.pointerId);
   if (active.size === 0){
     viewport.classList.remove("grabbing");

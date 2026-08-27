@@ -6,52 +6,50 @@
 <title>Mapa mental — Organización del curso de control</title>
 <style>
 :root{
-  --bg:#f7f4ee;
+  --bg:#f5f0e1;
   --canvas-dot:#00000012;
-  --card-bg:#ffffff;
-  --card-border:#e4ddd0;
+  --card-bg:#eedfcc;
+  --card-border:#d3bd98;
   --text:#2c2b29;
-  --text-dim:#6b665c;
+  --text-dim:#6b6252;
   --root-bg:#2c2b29;
   --root-text:#ffffff;
-  --panel-bg:#ffffffee;
-  --panel-border:#e4ddd0;
-  --shadow:0 2px 6px rgba(44,43,41,.12), 0 1px 2px rgba(44,43,41,.08);
-  --accent-semanas:210 55% 42%;
-  --accent-lab:168 48% 34%;
-  --edge:#c9c2b2;
+  --panel-bg:#fbf8f0ee;
+  --panel-border:#d3bd98;
+  --shadow:0 2px 6px rgba(44,43,41,.14), 0 1px 2px rgba(44,43,41,.09);
+  --edge:#57503f;
   --highlight:#ffe08a;
   --dim-opacity:.22;
 }
 :root[data-theme="dark"]{
-  --bg:#181816;
+  --bg:#1c1a16;
   --canvas-dot:#ffffff10;
-  --card-bg:#242320;
-  --card-border:#3a382f;
+  --card-bg:#3a352c;
+  --card-border:#514a3b;
   --text:#f1ede3;
-  --text-dim:#a9a396;
+  --text-dim:#b9b1a0;
   --root-bg:#f1ede3;
   --root-text:#1c1b19;
-  --panel-bg:#242320ee;
-  --panel-border:#3a382f;
+  --panel-bg:#2a271fee;
+  --panel-border:#514a3b;
   --shadow:0 2px 8px rgba(0,0,0,.45);
-  --edge:#4a473d;
+  --edge:#a89f8c;
   --highlight:#ad8a1f;
 }
 @media (prefers-color-scheme: dark){
   :root:not([data-theme="light"]){
-    --bg:#181816;
+    --bg:#1c1a16;
     --canvas-dot:#ffffff10;
-    --card-bg:#242320;
-    --card-border:#3a382f;
+    --card-bg:#3a352c;
+    --card-border:#514a3b;
     --text:#f1ede3;
-    --text-dim:#a9a396;
+    --text-dim:#b9b1a0;
     --root-bg:#f1ede3;
     --root-text:#1c1b19;
-    --panel-bg:#242320ee;
-    --panel-border:#3a382f;
+    --panel-bg:#2a271fee;
+    --panel-border:#514a3b;
     --shadow:0 2px 8px rgba(0,0,0,.45);
-    --edge:#4a473d;
+    --edge:#a89f8c;
     --highlight:#ad8a1f;
   }
 }
@@ -92,7 +90,7 @@ body{
   left:0;top:0;
   width:max-content;
   will-change:transform;
-  border-radius:12px;
+  border-radius:14px;
   padding:8px 14px;
   font-size:13.5px;
   line-height:1.32;
@@ -113,28 +111,19 @@ body{
   font-weight:700;
   font-size:16px;
   border:none;
-  border-radius:16px;
+  border-radius:18px;
   padding:14px 22px;
   text-align:center;
 }
 .node.depth-1{
-  color:#fff;
   font-weight:700;
   font-size:14.5px;
-  border:none;
   padding:10px 18px;
   text-align:center;
 }
-.node.depth-2{
-  font-weight:600;
-  border-left:4px solid hsl(var(--hue));
-  background:hsl(var(--hue) / 10%);
-}
-:root[data-theme="dark"] .node.depth-2, :root:not([data-theme="light"]) .node.depth-2{
-  background:hsl(var(--hue) / 16%);
-}
-.node.depth-3{ border-left:3px solid hsl(var(--hue) / 65%); }
-.node.depth-4{ border-left:3px solid hsl(var(--hue) / 45%); font-size:13px; color:var(--text-dim); }
+.node.depth-2{ font-weight:600; }
+.node.depth-3{ font-weight:500; }
+.node.depth-4{ font-size:13px; }
 .node.match{ background:var(--highlight) !important; color:#2c2b29 !important; }
 .node.dimmed{ opacity:var(--dim-opacity); }
 .node .toggle{
@@ -221,18 +210,6 @@ body{
 }
 .btn:hover{ background:rgba(127,127,127,.14); }
 #controls{ display:flex; gap:2px; padding:3px; }
-#legend{
-  position:absolute;
-  bottom:14px; left:14px;
-  z-index:10;
-  padding:10px 14px;
-  font-size:12px;
-  color:var(--text-dim);
-  display:flex;
-  gap:16px;
-}
-#legend .item{ display:flex; align-items:center; gap:6px; }
-#legend .dot{ width:10px; height:10px; border-radius:50%; }
 #hint{
   position:absolute;
   bottom:14px; right:14px;
@@ -256,7 +233,6 @@ body{
 @media (max-width:720px){
   #hint{ display:none; }
   #title-box{ display:none; }
-  #legend{ font-size:10.5px; gap:10px; padding:7px 10px;}
 }
 </style>
 </head>
@@ -285,11 +261,6 @@ body{
   </div>
 </div>
 
-<div id="legend" class="panel">
-  <div class="item"><span class="dot" style="background:hsl(210 55% 42%)"></span>Semanas (teoría)</div>
-  <div class="item"><span class="dot" style="background:hsl(168 48% 34%)"></span>Laboratorio</div>
-</div>
-
 <div id="hint" class="panel">Clic en un nodo para expandir/colapsar · arrastra para mover · rueda o pellizco para zoom</div>
 
 <div id="zoomctl" class="panel">
@@ -307,7 +278,7 @@ const DATA = {
   t: "Organización del curso de control",
   children: [
     {
-      t: "Semanas", side: "right", hue: 210,
+      t: "Semanas", side: "right",
       children: [
         { t: "Semana 1", children: [
           { t: "Introducción" },
@@ -381,7 +352,7 @@ const DATA = {
       ]
     },
     {
-      t: "Laboratorio", side: "left", hue: 168,
+      t: "Laboratorio", side: "left",
       children: [
         { t: "Semana 1", children: [ { t: "Presentación" } ]},
         { t: "Semana 2", children: [ { t: "Implementación de sistemas de primero y segundo orden" } ]},
@@ -401,21 +372,20 @@ const DATA = {
 };
 
 /* ---------------------------------------------------------------
-   2. Build tree: assign ids, depth, side, hue, parent refs
+   2. Build tree: assign ids, depth, side, parent refs
    ------------------------------------------------------------- */
 let idCounter = 0;
-function buildTree(node, depth, inheritedSide, inheritedHue, parent){
+function buildTree(node, depth, inheritedSide, parent){
   node.id = "n" + (idCounter++);
   node.depth = depth;
   node.side = node.side || inheritedSide;
-  node.hue = node.hue != null ? node.hue : inheritedHue;
   node.parent = parent || null;
   node.children = node.children || [];
   node.collapsed = !!node.collapsed;
-  node.children.forEach(c => buildTree(c, depth + 1, node.side, node.hue, node));
+  node.children.forEach(c => buildTree(c, depth + 1, node.side, node));
   return node;
 }
-buildTree(DATA, 0, null, null, null);
+buildTree(DATA, 0, null, null);
 
 const allNodes = [];
 (function flatten(n){ allNodes.push(n); n.children.forEach(flatten); })(DATA);
@@ -432,8 +402,6 @@ allNodes.forEach(n => {
   const el = document.createElement("div");
   el.className = "node depth-" + n.depth;
   el.style.maxWidth = (MAXW[n.depth] || 220) + "px";
-  if (n.hue != null) el.style.setProperty("--hue", n.hue + " 70% 45%");
-  if (n.depth === 1) el.style.background = `hsl(${n.hue} 55% 40%)`;
 
   const inner = document.createElement("div");
   inner.className = "node-inner";
@@ -530,13 +498,13 @@ function edgePath(px, py, pw, cx, cy, cw, pside){
 }
 
 function applyVisibility(){
-  // determine which nodes are currently visible (ancestors all expanded)
-  allNodes.forEach(n => n._visible = true);
-  (function walk(n){
-    visibleChildren(n).forEach(c => { c._visible = true; walk(c); });
-    n.children.forEach(c => { if (n.collapsed) c._visible = false; });
-  })(DATA);
-  DATA._visible = true;
+  // A node is visible only if every ancestor up to the root is both
+  // visible and expanded — collapsing a node must hide the whole
+  // subtree beneath it, at any depth, not just its direct children.
+  (function walk(n, visible){
+    n._visible = visible;
+    n.children.forEach(c => walk(c, visible && !n.collapsed));
+  })(DATA, true);
 }
 
 function setNodeTransform(n, x, y){

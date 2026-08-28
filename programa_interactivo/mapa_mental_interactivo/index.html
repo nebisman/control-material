@@ -147,18 +147,15 @@ body{
   font-size:14.5px;
   padding:10px 18px;
   text-align:center;
-  color:#fff;
-  border:none;
 }
-.node.depth-1.branch-a{ background:var(--hue-a-solid); }
-.node.depth-1.branch-b{ background:var(--hue-b-solid); }
-.node.depth-1 .toggle{ background:rgba(255,255,255,.28); }
+/* Week nodes (depth-2) carry the exact same solid fill as their branch
+   header (depth-1) — same background, same identity, one step down. */
+.node.depth-1, .node.depth-2{ color:#fff; border:none; }
+.node.depth-1.branch-a, .node.depth-2.branch-a{ background:var(--hue-a-solid); }
+.node.depth-1.branch-b, .node.depth-2.branch-b{ background:var(--hue-b-solid); }
+.node.depth-1 .toggle, .node.depth-2 .toggle{ background:rgba(255,255,255,.28); }
 
-.node.depth-2{
-  font-weight:600;
-  border-left:4px solid rgb(var(--hue));
-  background:color-mix(in oklab, rgb(var(--hue)) 12%, var(--card-bg));
-}
+.node.depth-2{ font-weight:600; }
 .node.depth-3{
   font-weight:500;
   border-left:3px solid rgb(var(--hue) / .8);

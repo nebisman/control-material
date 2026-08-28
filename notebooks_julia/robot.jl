@@ -20,7 +20,7 @@ r        = 0.0672 / 2              # Radio de la rueda [m]
 inercia  = 0.5 * m * r^2          # Momento de inercia de la rueda [kg·m²]
 
 M        = 1.000 - 2*m            # Masa del cuerpo del vehículo [kg]  (masa total = 1.000 kg)
-L        = 0.5 * 0.0766           # Distancia del centro de masa al centro del chasis [m]
+L        = 0.5 * 0.0766             # Distancia del centro de masa al centro del chasis [m]
                                    
 
 J_centroide = (1/12) * M * (0.0766^2 + 0.0575^2)
@@ -78,6 +78,9 @@ D = zeros(6, 2)
 # Sistema en espacio de estados (tiempo continuo)
 sys = ss(A, B, C, D)
 
+
+ang = ss(A, B, [0, 0, 0, 0, 1, 0]',[0,0]')
+ang = minreal(tf(ang), 1e-6)  # Transferencia de entrada diferencial a salida x₅ (ψ)
 # ------------------------------------------------------------
 # 4. Verificación de controlabilidad
 #    Wr = [B, AB, A²B, ..., Aⁿ⁻¹B]  (matriz de controlabilidad)
@@ -206,3 +209,4 @@ C5  = [0.0  0.0  0.0  0.0  1.0  0.0]   # Salida: x₅ (ángulo de giro ψ)
     @printf "  Sobreimpulso x₅     : %+.4f rad (%.2f %%)\n" maximum(Y[5,:])  (maximum(Y[5,:])-1)*100
     @printf "  x₃ max (inclinación): %+.4f °\n"    maximum(abs.(Y[3,:])) * (180/π)
     @printf "  |u| máximo          : %+.4f N·m\n"  maximum(abs.(U))
+print(minimum(real(pole(sys))))

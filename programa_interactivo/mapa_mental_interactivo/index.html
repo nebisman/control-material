@@ -20,6 +20,15 @@
   --edge:#57503f;
   --highlight:#ffe08a;
   --dim-opacity:.22;
+  /* Branch hues — blue/orange, the two best-separated slots of a
+     CVD-validated categorical palette (worst-pair ΔE 24.7 protan / 33.6
+     normal-vision, both far past the 8/15 targets), re-validated against
+     this page's own parchment surface. Solid-fill shades are darkened
+     just enough that white node text clears 4.5:1. */
+  --hue-a:42 120 214;      /* Semanas — #2a78d6 */
+  --hue-a-solid:#266cc1;
+  --hue-b:235 104 52;      /* Laboratorio — #eb6834 */
+  --hue-b-solid:#bc532a;
 }
 :root[data-theme="dark"]{
   --bg:#1c1a16;
@@ -35,6 +44,10 @@
   --shadow:0 2px 8px rgba(0,0,0,.45);
   --edge:#a89f8c;
   --highlight:#ad8a1f;
+  --hue-a:57 135 229;      /* #3987e5 */
+  --hue-a-solid:#3073c3;
+  --hue-b:217 89 38;       /* #d95926 */
+  --hue-b-solid:#c35022;
 }
 @media (prefers-color-scheme: dark){
   :root:not([data-theme="light"]){
@@ -51,6 +64,10 @@
     --shadow:0 2px 8px rgba(0,0,0,.45);
     --edge:#a89f8c;
     --highlight:#ad8a1f;
+    --hue-a:57 135 229;
+    --hue-a-solid:#3073c3;
+    --hue-b:217 89 38;
+    --hue-b-solid:#c35022;
   }
 }
 *{box-sizing:border-box}
@@ -119,15 +136,38 @@ body{
   padding:14px 22px;
   text-align:center;
 }
+/* Branch identity: "Semanas" (right, blue) vs "Laboratorio" (left, orange).
+   Depth encodes distance from the branch as a shade of that one hue —
+   color follows the entity (the branch), never the level alone. */
+.node.branch-a{ --hue:var(--hue-a); }
+.node.branch-b{ --hue:var(--hue-b); }
+
 .node.depth-1{
   font-weight:700;
   font-size:14.5px;
   padding:10px 18px;
   text-align:center;
+  color:#fff;
+  border:none;
 }
-.node.depth-2{ font-weight:600; }
-.node.depth-3{ font-weight:500; }
-.node.depth-4{ font-size:13px; }
+.node.depth-1.branch-a{ background:var(--hue-a-solid); }
+.node.depth-1.branch-b{ background:var(--hue-b-solid); }
+.node.depth-1 .toggle{ background:rgba(255,255,255,.28); }
+
+.node.depth-2{
+  font-weight:600;
+  border-left:4px solid rgb(var(--hue));
+  background:color-mix(in oklab, rgb(var(--hue)) 12%, var(--card-bg));
+}
+.node.depth-3{
+  font-weight:500;
+  border-left:3px solid rgb(var(--hue) / .8);
+  background:color-mix(in oklab, rgb(var(--hue)) 6%, var(--card-bg));
+}
+.node.depth-4{
+  font-size:13px;
+  border-left:3px solid rgb(var(--hue) / .55);
+}
 .node.match{ background:var(--highlight) !important; color:#2c2b29 !important; }
 .node.dimmed{ opacity:var(--dim-opacity); }
 .node .toggle{
@@ -146,9 +186,11 @@ body{
 .edge-path{
   fill:none;
   stroke:var(--edge);
-  stroke-width:2;
+  stroke-width:2.2;
   transition:opacity .25s ease, stroke .3s ease;
 }
+.edge-path.branch-a{ stroke:rgb(var(--hue-a)); }
+.edge-path.branch-b{ stroke:rgb(var(--hue-b)); }
 .edge-path.dimmed{ opacity:var(--dim-opacity); }
 
 #topbar{
@@ -234,9 +276,22 @@ body{
   gap:2px;
   padding:3px;
 }
+#legend{
+  position:absolute;
+  bottom:14px; left:14px;
+  z-index:10;
+  padding:10px 14px;
+  font-size:12px;
+  color:var(--text-dim);
+  display:flex;
+  gap:16px;
+}
+#legend .item{ display:flex; align-items:center; gap:6px; }
+#legend .dot{ width:10px; height:10px; border-radius:50%; flex:none; }
 @media (max-width:720px){
   #hint{ display:none; }
   #title-box{ display:none; }
+  #legend{ font-size:10.5px; gap:10px; padding:7px 10px; }
 }
 </style>
 </head>
@@ -263,6 +318,11 @@ body{
     <button class="btn" id="btn-fit">Centrar</button>
     <button class="btn" id="btn-theme">🌓</button>
   </div>
+</div>
+
+<div id="legend" class="panel">
+  <div class="item"><span class="dot" style="background:rgb(var(--hue-a))"></span>Semanas</div>
+  <div class="item"><span class="dot" style="background:rgb(var(--hue-b))"></span>Laboratorio</div>
 </div>
 
 <div id="hint" class="panel">Clic en un nodo para expandir/colapsar · arrastra para mover · rueda o pellizco para zoom</div>
@@ -402,9 +462,15 @@ const edgesG = document.getElementById("edges-g");
 
 const MAXW = { 0: 280, 1: 170, 2: 210, 3: 220, 4: 220 };
 
+function branchClass(n){
+  // Root has no side (neutral). "right" = Semanas = branch-a (blue),
+  // "left" = Laboratorio = branch-b (orange).
+  return n.side === "left" ? "branch-b" : n.side === "right" ? "branch-a" : "";
+}
+
 allNodes.forEach(n => {
   const el = document.createElement("div");
-  el.className = "node depth-" + n.depth;
+  el.className = ("node depth-" + n.depth + " " + branchClass(n)).trim();
   el.style.maxWidth = (MAXW[n.depth] || 220) + "px";
 
   const inner = document.createElement("div");
@@ -429,7 +495,7 @@ allNodes.forEach(n => {
   nodesLayer.appendChild(el);
 
   const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
-  path.setAttribute("class", "edge-path");
+  path.setAttribute("class", ("edge-path " + branchClass(n)).trim());
   n._path = path;
   if (n.parent) edgesG.appendChild(path);
 });
@@ -743,16 +809,16 @@ searchInput.addEventListener("input", () => {
 
   relayout();
 
-  requestAnimationFrame(() => {
-    allNodes.forEach(n => {
-      if (!n._visible) return;
-      if (matched.has(n)) n._el.classList.add("match");
-      else if (!keep.has(n)) n._el.classList.add("dimmed");
-    });
-    allNodes.forEach(n => {
-      if (!n._visible || !n.parent) return;
-      if (!keep.has(n) && !matched.has(n)) n._path.classList.add("dimmed");
-    });
+  // relayout() is fully synchronous, so the highlight classes can be
+  // applied right after it — no need to defer to a frame.
+  allNodes.forEach(n => {
+    if (!n._visible) return;
+    if (matched.has(n)) n._el.classList.add("match");
+    else if (!keep.has(n)) n._el.classList.add("dimmed");
+  });
+  allNodes.forEach(n => {
+    if (!n._visible || !n.parent) return;
+    if (!keep.has(n) && !matched.has(n)) n._path.classList.add("dimmed");
   });
 });
 

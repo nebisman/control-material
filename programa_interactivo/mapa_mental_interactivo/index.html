@@ -104,6 +104,10 @@ body{
   white-space:normal;
   word-break:break-word;
 }
+/* Position transitions are gated behind #nodes.animated, added one frame
+   after the initial layout — otherwise nodes would visibly fly in from
+   the canvas origin on first paint. */
+#nodes.animated .node{ transition-property:opacity, box-shadow, background-color, color, border-color, transform; transition-duration:.25s, .15s, .3s, .3s, .3s, .32s; transition-timing-function:ease, ease, ease, ease, ease, cubic-bezier(.22,.9,.3,1); }
 .node:hover{box-shadow:0 4px 12px rgba(0,0,0,.18)}
 .node.depth-0{
   background:var(--root-bg);
@@ -420,6 +424,7 @@ allNodes.forEach(n => {
   el.appendChild(inner);
 
   n._el = el;
+  n.x = 0; n.y = 0; n.w = 0; n.h = 0;
   el.__node = n;
   nodesLayer.appendChild(el);
 
@@ -516,59 +521,36 @@ function setEdgeForNode(n, px, py, pw, x, y, w){
   n._path.setAttribute("d", edgePath(px, py, pw, x, y, w, sign));
 }
 
-let animFrame = null;
-function relayout(animate){
-  const before = {};
-  allNodes.forEach(n => { before[n.id] = { x: n.x, y: n.y, w: n.w, h: n.h }; });
-
-  computeLayout();
+function relayout(){
+  // Visibility (and the resulting DOM display) must be settled BEFORE
+  // computeLayout() measures node boxes: a node still display:none from
+  // the previous render measures as 0x0, which is what collapsed the
+  // spacing between freshly-revealed nodes into a tight overlapping stack.
   applyVisibility();
-
   allNodes.forEach(n => {
     n._el.style.display = n._visible ? "" : "none";
     if (n.parent) n._path.style.display = n._visible && n.parent._visible ? "" : "none";
   });
 
-  if (!animate){
-    allNodes.forEach(n => {
-      if (!n._visible) return;
-      setNodeTransform(n, n.x, n.y);
-    });
-    allNodes.forEach(n => {
-      if (!n._visible || !n.parent || !n.parent._visible) return;
-      setEdgeForNode(n, n.parent.x, n.parent.y, n.parent.w, n.x, n.y, n.w);
-    });
-    return;
-  }
+  computeLayout();
 
-  const after = {};
-  allNodes.forEach(n => { after[n.id] = { x: n.x, y: n.y, w: n.w, h: n.h }; });
-
-  const dur = 320;
-  const t0 = performance.now();
-  if (animFrame) cancelAnimationFrame(animFrame);
-  function ease(t){ return t<0.5 ? 4*t*t*t : 1-Math.pow(-2*t+2,3)/2; }
-  function frame(now){
-    let t = Math.min(1, (now - t0) / dur);
-    const e = ease(t);
-    allNodes.forEach(n => {
-      if (!n._visible) return;
-      const b = before[n.id] || after[n.id];
-      const a = after[n.id];
-      const x = b.x + (a.x - b.x) * e;
-      const y = b.y + (a.y - b.y) * e;
-      n._curX = x; n._curY = y; n._curW = a.w; n._curH = a.h;
-      setNodeTransform(n, x, y);
-    });
-    allNodes.forEach(n => {
-      if (!n._visible || !n.parent || !n.parent._visible) return;
-      setEdgeForNode(n, n.parent._curX, n.parent._curY, n.parent._curW, n._curX, n._curY, n._curW);
-    });
-    if (t < 1){
-      animFrame = requestAnimationFrame(frame);
-    }
-  }
-  animFrame = requestAnimationFrame(frame);
+  // Every visible node is positioned synchronously here, every single
+  // call — this is the one and only source of truth for where a node
+  // sits. The smooth slide when collapsing/expanding comes from the CSS
+  // "transition: transform" on #nodes.animated .node (see stylesheet):
+  // the browser interpolates from whatever transform was previously set
+  // to this new one on its own. A hand-rolled requestAnimationFrame
+  // tween was tried here before and proved fragile — rapid toggles could
+  // cancel a frame loop mid-flight and leave nodes with no transform set
+  // at all, which is what caused them to pile up at the canvas origin.
+  allNodes.forEach(n => {
+    if (!n._visible) return;
+    setNodeTransform(n, n.x, n.y);
+  });
+  allNodes.forEach(n => {
+    if (!n._visible || !n.parent || !n.parent._visible) return;
+    setEdgeForNode(n, n.parent.x, n.parent.y, n.parent.w, n.x, n.y, n.w);
+  });
 }
 
 /* ---------------------------------------------------------------
@@ -622,7 +604,7 @@ function toggleNode(n){
   if (!n || !n.children.length) return;
   n.collapsed = !n.collapsed;
   if (n._toggleEl) n._toggleEl.textContent = n.collapsed ? "+" : "–";
-  relayout(true);
+  relayout();
 }
 
 function endPointer(e){
@@ -670,8 +652,8 @@ document.getElementById("btn-zoom-in").addEventListener("click", () => zoomBy(1.
 document.getElementById("btn-zoom-out").addEventListener("click", () => zoomBy(1/1.2));
 
 function fitView(){
-  computeLayout();
   applyVisibility();
+  computeLayout();
   let minX=Infinity,maxX=-Infinity,minY=Infinity,maxY=-Infinity;
   allNodes.forEach(n => {
     if (!n._visible) return;
@@ -688,7 +670,7 @@ function fitView(){
   panY = -((minY + maxY) / 2) * s;
   applyTransform();
 }
-document.getElementById("btn-fit").addEventListener("click", () => { relayout(false); fitView(); });
+document.getElementById("btn-fit").addEventListener("click", () => { relayout(); fitView(); });
 
 /* ---------------------------------------------------------------
    7. Expand / collapse all
@@ -700,7 +682,7 @@ function setAllCollapsed(val){
       if (n._toggleEl) n._toggleEl.textContent = val ? "+" : "–";
     }
   });
-  relayout(true);
+  relayout();
 }
 document.getElementById("btn-expand").addEventListener("click", () => setAllCollapsed(false));
 document.getElementById("btn-collapse").addEventListener("click", () => setAllCollapsed(true));
@@ -727,7 +709,7 @@ searchInput.addEventListener("input", () => {
         }
       });
       savedCollapsed = null;
-      relayout(true);
+      relayout();
     }
     return;
   }
@@ -759,7 +741,7 @@ searchInput.addEventListener("input", () => {
     }
   });
 
-  relayout(true);
+  relayout();
 
   requestAnimationFrame(() => {
     allNodes.forEach(n => {
@@ -795,8 +777,11 @@ document.getElementById("btn-theme").addEventListener("click", () => {
 /* ---------------------------------------------------------------
    10. Init
    ------------------------------------------------------------- */
-relayout(false);
+relayout();
 fitView();
+// Enable CSS-driven position transitions only after the first paint,
+// so the initial layout doesn't visibly fly in from the canvas origin.
+requestAnimationFrame(() => requestAnimationFrame(() => nodesLayer.classList.add("animated")));
 </script>
 </body>
 </html>

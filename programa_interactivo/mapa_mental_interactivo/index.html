@@ -349,13 +349,13 @@ const DATA = {
           { t: "Estabilidad de sistemas" },
           { t: "Respuesta de sistemas de primero y segundo orden" },
           { t: "Diseño de controladores PI/PID" },
-          { t: "Efectos de la realimentación", collapsed: true, children: [
+          { t: "Efectos de la realimentación", children: [
             { t: "Perturbaciones" },
             { t: "Robustez ante incertidumbre" },
             { t: "Seguimiento de referencias" },
           ]},
         ]},
-        { t: "Semana 3", collapsed: true, children: [
+        { t: "Semana 3", children: [
           { t: "Modelos de sistemas lineales" },
           { t: "Linealización de sistemas no lineales" },
         ]},
@@ -442,7 +442,10 @@ function buildTree(node, depth, inheritedSide, parent){
   node.side = node.side || inheritedSide;
   node.parent = parent || null;
   node.children = node.children || [];
-  node.collapsed = !!node.collapsed;
+  // Default: any node from depth 1 down (branches, weeks, and their
+  // subtopics) starts collapsed, so the map opens showing just the root —
+  // data can still force a node open via `collapsed:false`.
+  node.collapsed = node.collapsed !== undefined ? !!node.collapsed : (depth >= 1 && node.children.length > 0);
   node.children.forEach(c => buildTree(c, depth + 1, node.side, node));
   return node;
 }

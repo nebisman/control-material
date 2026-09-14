@@ -2,3 +2,5 @@ instructions/
 instructions
 quarto
 quarto/
+Manifest.toml
+Project.toml

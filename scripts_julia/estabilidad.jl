@@ -39,3 +39,7 @@ r = b^2 - 4*a*c
 kp1 = (-b + sqrt(r)) / (2*a)
 kp2 = (-b - sqrt(r)) / (2*a)
 println("Para ki = $ki_valor =>    $kp1 <= kp <= $kp2")
+plot(kp, ki, xlabel="k_p", ylabel="k_i", color =:green,title="Frontera de estabilidad",
+     label="frontera de estabilidad", fillrange=0, fillalpha=0.3, legend=:topright)
+plot!( [kp1, kp2], [ki_valor, ki_valor], xlabel="k_p", ylabel="k_i", color =:red,
+     label="Para ki = $ki_valor =>  $kp1 <= kp <= $kp2 ",  legend=:bottomleft)

@@ -116,7 +116,7 @@ begin
 
 
 	p2 = bodeplot(T, plotphase = false, xlims=[0.2*ωn_min, 10*ωn_max],
-				  linewidth=3, title = "Bode del sistema |T(jω)",
+				  linewidth=3, title = "Bode del sistema |T(jω)|",
 				  label=" |T(jω)")
 	
 	vline!(p2[1], [ωn_min], color = :red, linestyle = :dash,

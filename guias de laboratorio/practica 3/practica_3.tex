@@ -49,10 +49,10 @@ Y usaremos un control PI de dos grados de libertad, como se muestra en la figura
 \begin{enumerate}
 	\item Diseñe en un controlador PI de dos grados de libertad para satisfacer los siguientes requerimientos de diseño:
 	\begin{itemize}
-		\item $SP \approx 10\%$
-		\item $t_{ee} \approx 0.7\text{ s} $
+		\item Sobrepico $SP \approx 10\%$
+		\item Tiempo de subida $t_{r} \approx 0.7\text{ s} $
 	\end{itemize}
-
+ \emph{No olvide que el \that representa el tiempo en escala 1:1000, es decir un tiempo de 0.7s se vera como 700us en el \that. }
 	
 	\item Dibuje correctamente el diagrama de computación analógica con bloques del \that que  implementa el diagrama de la figura~\ref{fig:controlPI-1gdl}. Tenga en cuenta las inversiones de signo que producen los sumadores e integradores. Use el mínimo número de bloques.
 	
@@ -83,14 +83,14 @@ Y usaremos un control PI de dos grados de libertad, como se muestra en la figura
    
     Intente diseñar un controlador PI que satisfaga estas especificaciones para todos las variaciones del parámetro $b$:
    	\begin{itemize}
-   	\item $SP \leq 10\%$
-   	\item $t_{ee} \leq 0.7\text{ s} $
+   	\item Sobrepico $SP \leq 10\%$
+   	\item Tiempo de subida $t_{r} \leq 0.7\text{ s} $
    \end{itemize}
     Note que ahora queremos que el tiempo de subida \textbf{sea menor} a $0.7\text{ s}$ y el sobrepico menor a $10\%$, al variar el parámetro $b$. Haga las simulaciones numéricas que considere necesarias para establecer con cual valor de $b$ se deben calcular los valores de $k_p$ y $k_i$ para lograr que se verifiquen siempre las especificaciones.
     
     \item Ajuste su diseño en el \that y muestre que se cumplen los requerimientos del numeral 6, variando el parámetro $b$ con el potenciómetro que lo implementa. 
    
-   \item \textcolor{bitacora}{Incluya su percepción personal al terminar el desarrollo de esta práctica.}
+   \item \textcolor{bitacora}{Escriba su percepción personal al terminar el desarrollo de esta práctica.}
 \end{enumerate}
 
  

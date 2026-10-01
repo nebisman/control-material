@@ -1,0 +1,66 @@
+\documentclass[11pt, a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[spanish]{babel}
+\usepackage{amsmath, amssymb}
+\usepackage{geometry}
+\usepackage{hyperref}
+\usepackage{enumitem}
+
+\geometry{top=2.5cm, bottom=2.5cm, left=2.5cm, right=2.5cm}
+
+\hypersetup{
+	colorlinks=true,
+	linkcolor=blue,
+	urlcolor=blue
+}
+
+\title{\Large \textbf{Pasos de instalación}}
+\author{}
+\date{}
+
+\begin{document}
+	
+	\maketitle
+	\vspace{-1cm}
+	
+	\noindent Esta tarea sirve de preparación para el laboratorio.
+	
+	\begin{enumerate}[leftmargin=*]
+ \item Entre al sitio \url{https://julialang.org/downloads/} y descargue la versión más reciente de Julia  para su equipo. Siga las instrucciones dadas en dicha página, para su sistema operativo.Instalelo con un PATH simple y sin espacios por ejemplo ``C:$\backslash$julia''.
+ 
+ Si el programa de instalación sugiere agregar la trayectoria a PATH, acéptelo; en caso contrario, copie el PATH donde se instala Julia para usarla en la configuración posterior.
+			
+
+		
+\item \textbf{Ahora instale el editor integrado Visual Studio Code VSCode con el cual vamos a trabajar.}
+		\begin{enumerate}[label=\alph*)]
+
+\item Descargue e instale el editor (también open source) de la página \url{https://code.visualstudio.com/Download}. Siga las instrucciones para su instalación.
+
+\item Ahora configure VSCode para usar con Julia. Para ello, debe buscar en la opción \textit{Extensions} (columna izquierda de la pantalla, u oprimiendo \texttt{Ctrl+Shift+X}). Se abre una columna de búsqueda llamada \textbf{EXTENSIONS: MARKETPLACE}: teclee \texttt{julia}.\\
+			Aparecen varias extensiones, de las cuales debe seleccionar una que dice \textbf{Julia - Julia Language Support}. Cliquee sobre el botón \textit{Install}. Cuando termine de instalar la extensión, reinicie VSCode. Ya debería estar listo para trabajar en Julia.
+		\end{enumerate}
+
+\item Instale la extensión para \texttt{Jupyter} en VSCode.
+
+\item Cree una carpeta para control donde va a trabajar durante el semestre en el laboratorio. Trate de que sea una carpeta con un PATH simple, por ejemplo, ``C:$\backslash$labcontrol''. 
+
+\item En el menú principal del VSCode, seleccione la opción \textbf{File $=>$ Open Folder} y abra la carpeta que habia creado en el paso anterior. Cree un archivo con extensión jl, por ejemplo, ``instalar.jl''. Copie las siguientes instrucciones en el archivo:
+
+\verb*|print("Instalando IJulia...")|\\
+\verb*|Pkg.add("IJulia")|
+
+\item Siga las instrucciones del 
+		
+%\item Por último, vamos a instalar algunos paquetes que usaremos durante el semestre. Algunos son bastante grandes y pueden tomar un tiempo considerable para instalarlos.
+%		
+%\item Copie el instalador adjunto (\texttt{instalador\_dos.jl}). Si todo sale bien, ya está.\\
+%		En caso de que tengan algún tropiezo para instalar alguna componente, se recomienda mirar el blog: \url{https://blog.glcs.io/install-julia-and-vscode} para la instalación y \url{https://blog.glcs.io/install-julia-and-vscode#heading-configuring-vs-code-for-julia} para la configuración del VSCode.
+%		
+%		\item Instale la extensión para \texttt{Jupyter} en VSCode.
+%	\end{enumerate}
+%	
+%\vspace{0.5cm}
+%	\noindent Si tienen preguntas adicionales, trataremos de responderlas en la clase.
+	
+\end{document}

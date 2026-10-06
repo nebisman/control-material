@@ -50,10 +50,10 @@ respuesta al escalón.
 """
 
 # ╔═╡ 5d1b486e-535b-436d-aa61-9ba58cdee12e
-md"``t_{ee}`` [s] = $(@bind t_ee Slider(0.1:0.01:0.5, default=0.1, show_value=true))"
+md"``t_{ee}`` [s] = $(@bind t_ee Slider(0.1:0.01:0.5, default=0.5, show_value=true))"
 
 # ╔═╡ 104b2ca8-79aa-4218-9006-64e14bf19c41
-md"``t_r`` [s] = $(@bind t_r Slider(0.05:0.001:0.1, default=0.05, show_value=true))"
+md"``t_r`` [s] = $(@bind t_r Slider(0.05:0.001:0.1, default=0.1, show_value=true))"
 
 # ╔═╡ a7f6738b-fe1c-49b6-83a4-fc4c9c2f6978
 md"``SP`` [%] = $(@bind SP Slider(0.2:0.5:10.0, default=5.0, show_value=true))"
@@ -71,14 +71,14 @@ end
 # ╔═╡ f82e1b85-b33f-43c6-8092-7991ec79133e
 md"
 Distancia del polo lejano 
-``n`` = $(@bind n Slider(1.0:0.5:5.0, default=3.0, show_value=true))"
+``n`` = $(@bind n Slider(1.0:0.5:5.0, default=1.5, show_value=true))"
 
 # ╔═╡ 9850a008-cf41-4def-a4d2-fc33a15fbeda
 begin
-	# Polo complejo superior seleccionado (x + jy). Inicial: ζ = 0.7, ωn = 1.
+	# Polo complejo superior seleccionado (x + jy). Inicial: s = -8 + j8.
 	# Se guarda en un Ref para que el gráfico interactivo lo lea sin crear una
 	# dependencia cíclica con el valor del clic.
-	polo_actual = Ref((-0.7, sqrt(1 - 0.7^2)))
+	polo_actual = Ref((-13.0, 13.0))
 	md""
 end
 
@@ -101,8 +101,7 @@ end
 	si = stepinfo(res3; risetime_th = (0.0, 0.9))
 
 	S = max(σ_min, ωn_min, n * ωn0)
-	xlo, xhi = -1.3 * S, 0.15 * S
-	Y = max(0.65 * S, 1.15 * ωn_min, 1.2 * y0)
+	Lax = 1.1 * n * ωn0   # mismo límite para ambos ejes del plano s
 	L = 10 * S
 
 	# Líneas de especificación en la respuesta al escalón (mismos colores que la región)
@@ -150,7 +149,7 @@ end
 		name = "ωn_min = $(round(ωn_min, digits=2)) rad/s"), row = 1, col = 2)
 
 	add_trace!(fig, scatter(x = [-σ_min, -σ_min], y = [-L, L],
-		mode = "lines", line = attr(color = "rgba(148,0,211,0.55)", width = 3, dash = "dash"),
+		mode = "lines", line = attr(color = "rgba(148,0,211,0.55)", width = 2, dash = "dash"),
 		hoverinfo = "skip",
 		name = "σ_min = $(round(σ_min, digits=2))"), row = 1, col = 2)
 
@@ -163,7 +162,9 @@ end
 	relayout!(fig,
 		xaxis_title_text = "tiempo (s)", yaxis_title_text = "salida",
 		xaxis2_title_text = "Re", yaxis2_title_text = "Im",
-		xaxis2_range = [xlo, xhi], yaxis2_range = [-Y, Y],
+		xaxis2_range = [-1.1*Lax, 0], yaxis2_range = [-Lax, Lax],
+		yaxis2_scaleanchor = "x2", yaxis2_scaleratio = 1,
+		xaxis2_constrain = "domain", yaxis2_constrain = "domain",
 		xaxis2_zerolinecolor = "black", yaxis2_zerolinecolor = "black",
 		legend = attr(orientation = "v", x = 0.55, xanchor = "left", y = -0.2, yanchor = "top",
 			title = attr(text = "Región de diseño")),
@@ -240,9 +241,9 @@ end
 		}, [$(idx_polos)])
 
 		const upd = {'xaxis.range': [0, tf], 'yaxis.autorange': true}
-		const xr = xa.range, yr = ya.range
-		if (-a3 < xr[0]) upd['xaxis2.range'] = [-1.1 * a3, xr[1]]
-		if (y > yr[1]) upd['yaxis2.range'] = [-1.2 * y, 1.2 * y]
+		const Lax = 1.1 * a3
+		upd['xaxis2.range'] = [-2 * Lax, 0]
+		upd['yaxis2.range'] = [-Lax, Lax]
 		Plotly.relayout(PLOT, upd)
 
 		PLOT.value = [x, y]
@@ -253,6 +254,9 @@ end
 	add_js_listener!(fig, "click", js_click)
 	fig
 end
+
+# ╔═╡ 9a21116c-a73d-48a9-b0ae-ccae90cea436
+
 
 # ╔═╡ 24242526-9406-4b86-ac62-f7227a5936cc
 let
@@ -280,5 +284,6 @@ end
 # ╟─91a028da-5f54-4fb1-9109-a9fbffd23544
 # ╟─f82e1b85-b33f-43c6-8092-7991ec79133e
 # ╟─9850a008-cf41-4def-a4d2-fc33a15fbeda
-# ╠═1f2715fa-1953-436d-9178-8b75cce17ffd
+# ╟─1f2715fa-1953-436d-9178-8b75cce17ffd
+# ╠═9a21116c-a73d-48a9-b0ae-ccae90cea436
 # ╟─24242526-9406-4b86-ac62-f7227a5936cc

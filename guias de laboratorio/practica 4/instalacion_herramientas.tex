@@ -23,7 +23,7 @@
 	\maketitle
 	\vspace{-1cm}
 	
-	\noindent Esta tarea sirve de preparación para el laboratorio.
+	\noindent Realice los siguientes pasos para .
 	
 	\begin{enumerate}[leftmargin=*]
  \item Entre al sitio \url{https://julialang.org/downloads/} y descargue la versión más reciente de Julia  para su equipo. Siga las instrucciones dadas en dicha página, para su sistema operativo.Instalelo con un PATH simple y sin espacios por ejemplo ``C:$\backslash$julia''.
@@ -41,20 +41,26 @@
 			Aparecen varias extensiones, de las cuales debe seleccionar una que dice \textbf{Julia - Julia Language Support}. Cliquee sobre el botón \textit{Install}. Cuando termine de instalar la extensión, reinicie VSCode. Ya debería estar listo para trabajar en Julia.
 		\end{enumerate}
 
-\item Instale la extensión para \texttt{Jupyter} en VSCode.
+\item Instale la extensión para \texttt{Jupyter} en VSCode 
+
 
 \item Cree una carpeta para control donde va a trabajar durante el semestre en el laboratorio. Trate de que sea una carpeta con un PATH simple, por ejemplo, ``C:$\backslash$labcontrol''. 
 
 \item En el menú principal del VSCode, seleccione la opción \textbf{File $=>$ Open Folder} y abra la carpeta que habia creado en el paso anterior. Cree un archivo con extensión jl, por ejemplo, ``instalar.jl''. Copie las siguientes instrucciones en el archivo:
 
 \verb*|print("Instalando IJulia...")|\\
+Using Pkg\\
 \verb*|Pkg.add("IJulia")|
+
+
 
 \item Instale el \emph{firmware} de la tarjeta, según las instrucciones \href{https://nebisman.github.io/DCMotor.jl/dev/instalacion/firmware/#Instalaci%C3%B3n-del-Firmware}{según las instrucciones de este enlace.}  
 
-\item En el mismo archivo ``instalar.jl'' \href{https://nebisman.github.io/DCMotor.jl/dev/instalacion/paquete/}{ corra las instrucciones de instalación del paquete en este enlace.}  
+\item En el mismo archivo ``instalar.jl'' que creó anteriormente \href{https://nebisman.github.io/DCMotor.jl/dev/instalacion/paquete/}{ corra las instrucciones de instalación del paquete en este enlace.}  
 
-\item Descarque el archivo de la práctica  ``practica4.ipynb'' y cópielo en su carpeta de trabajo. En seleccionar kernel, seleccione "jupyter kernel". Verifique que la primera celda corre
+\item Descarque el archivo de la práctica 4 llamado ``practica4.ipynb'' y cópielo en su carpeta de trabajo. En seleccionar kernel (parte superior derecho), seleccione ``jupyter kernel'' y luego julia. Si no aparece,  recargue la ventana con Ctrl+Shift+P → ``Developer: Reload Window'' e intente de nuevo.
+
+\item Verifique que la primera celda corre.
 
 
 		

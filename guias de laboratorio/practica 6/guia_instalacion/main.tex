@@ -1,0 +1,76 @@
+\documentclass[12pt,letterpaper]{article}
+
+% --- Paquetes de Idioma y Formato ---
+\usepackage[spanish,es-tabla]{babel} % Idioma español y "Tabla" en vez de "Cuadro"
+% Se amplia 'top' a 4cm y 'headheight' a 75pt para darle espacio suficiente al logo de 3.5cm de ancho
+\usepackage[top=4cm, bottom=2.5cm, left=2.5cm, right=2.5cm, headheight=75pt, headsep=0.8cm]{geometry}
+
+% --- Encabezados y Pies de Página ---
+\usepackage{fancyhdr}
+\usepackage{graphicx}
+
+% --- Color y Estilos ---
+\usepackage[table]{xcolor}
+\definecolor{mycolor}{RGB}{220,220,220}
+
+% --- Otros Paquetes ---
+\usepackage{caption}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{soul}
+\usepackage{csquotes}
+\usepackage[backend=biber,style=numeric]{biblatex}
+\addbibresource{Referencias.bib}
+
+\usepackage{mdframed}
+\usepackage{float}
+\usepackage{adjustbox}
+\usepackage{enumitem}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{multirow}
+\usepackage{circuitikz}
+\usetikzlibrary{arrows.meta,babel}
+\usepackage{hyperref}
+
+% --- Configuración de Encabezados ---
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\includegraphics[width=3.5cm]{Images/logo.png}} % Tamaño original conservado
+\fancyhead[R]{\textbf{Guía de laboratorio - Control}}
+\fancyfoot[C]{\thepage}
+
+\begin{document}
+
+% ==================== PORTADA ====================
+\begin{titlepage}
+    \centering
+    \includegraphics[width=4.5cm]{Images/logo.png}
+    
+    \vspace*{\fill}
+    
+    {\LARGE \textbf{Guía de configuración del entorno de desarrollo y herramientas de software}}\\[0.8cm]
+    {\large \textbf{Asignatura:} Control}\\[0.3cm]
+    {\large \textbf{Guía diseñada por:} \\ Leonardo Bermeo y Dilan Torres}
+    
+    \vspace*{\fill}
+    
+    {\large Universidad Nacional de Colombia}\\[0.2cm]
+    {\large Departamento de Ingeniería Eléctrica y Electrónica}\\[0.2cm]
+    {Bogotá D.C., Colombia}
+    
+    \vspace*{\fill}
+    
+    {\large 2026-2}
+\end{titlepage}
+
+% ==================== ÍNDICE ====================
+\thispagestyle{plain} % Muestra número de página abajo sin encabezado repetido
+\tableofcontents
+\newpage
+
+% ==================== CUERPO ====================
+\input{Secciones/1. Requerimientos}
+\input{Secciones/2. Procedimiento}
+
+\end{document}

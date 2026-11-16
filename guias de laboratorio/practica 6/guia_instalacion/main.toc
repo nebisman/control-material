@@ -1,0 +1,11 @@
+\babel@toc {spanish}{}\relax 
+\contentsline {section}{\numberline {1}Requerimientos}{2}{section.1}%
+\contentsline {section}{\numberline {2}Procedimiento}{2}{section.2}%
+\contentsline {subsection}{\numberline {2.1}Pedir el MicroROS robot de equilibrio}{2}{subsection.2.1}%
+\contentsline {subsection}{\numberline {2.2}Instalar Visual Studio Code}{3}{subsection.2.2}%
+\contentsline {subsection}{\numberline {2.3}Instalar la extensión Arm Keil Studio Pack (MDK v6)}{3}{subsection.2.3}%
+\contentsline {subsection}{\numberline {2.4}Activar la licencia MDK-Community edition}{4}{subsection.2.4}%
+\contentsline {subsection}{\numberline {2.5}Descargar el proyecto de control LQR y Drivers}{5}{subsection.2.5}%
+\contentsline {subsection}{\numberline {2.6}Abrir la subcarpeta USER del proyecto en VS Code}{6}{subsection.2.6}%
+\contentsline {subsection}{\numberline {2.7}Construir el proyecto}{8}{subsection.2.7}%
+\contentsline {subsection}{\numberline {2.8}Encender y probar el robot}{8}{subsection.2.8}%

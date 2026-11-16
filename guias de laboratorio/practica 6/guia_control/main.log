@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023/Debian) (preloaded format=pdflatex 2026.2.2)  16 NOV 2026 14:21
+This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023/Debian) (preloaded format=pdflatex 2026.2.2)  16 NOV 2026 14:36
 entering extended mode
  \write18 enabled.
  %&-line parsing enabled.
@@ -1378,56 +1378,60 @@ Package pdftex.def Info: Images/logo.png  used on input line 55.
  [1
 
 {/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map} <./Images/logo.png>]
-LaTeX Font Info:    Trying to load font information for U+msa on input line 86.
+Underfull \hbox (badness 10000) in paragraph at lines 81--82
 
- (/usr/share/texlive/texmf-dist/tex/latex/amsfonts/umsa.fd
+ []
+
+LaTeX Font Info:    Trying to load font information for U+msa on input line 88.
+
+(/usr/share/texlive/texmf-dist/tex/latex/amsfonts/umsa.fd
 File: umsa.fd 2013/01/14 v3.01 AMS symbols A
 )
-LaTeX Font Info:    Trying to load font information for U+msb on input line 86.
+LaTeX Font Info:    Trying to load font information for U+msb on input line 88.
 
- (/usr/share/texlive/texmf-dist/tex/latex/amsfonts/umsb.fd
+
+(/usr/share/texlive/texmf-dist/tex/latex/amsfonts/umsb.fd
 File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 )
-<Images/mision_avanzar_girar2.pdf, id=28, 455.2441pt x 300.99867pt>
+<Images/mision_avanzar_girar2.pdf, id=30, 455.2441pt x 300.99867pt>
 File: Images/mision_avanzar_girar2.pdf Graphic file (type pdf)
 <use Images/mision_avanzar_girar2.pdf>
 Package pdftex.def Info: Images/mision_avanzar_girar2.pdf  used on input line 9
-6.
+8.
 (pdftex.def)             Requested size: 283.22162pt x 187.26942pt.
-
-Overfull \hbox (15.59267pt too wide) in paragraph at lines 107--108
-[][][][][][][][][][][][][][][][][][][][] 
- []
-
 File: Images/logo.png Graphic file (type png)
 <use Images/logo.png>
-Package pdftex.def Info: Images/logo.png  used on input line 110.
+Package pdftex.def Info: Images/logo.png  used on input line 108.
 (pdftex.def)             Requested size: 99.58464pt x 52.31514pt.
 
 pdfTeX warning (ext4): destination with the same identifier (name{page.1}) has 
 been already used, duplicate ignored
 <to be read again> 
                    \relax 
-l.110 \end{enumerate}
-                      [1 <./Images/mision_avanzar_girar2.pdf>]
-<Images/mision_ocho.pdf, id=78, 455.2441pt x 352.63283pt>
+l.108 	\begin{lstlisting}[nolol]
+                                 [1 <./Images/mision_avanzar_girar2.pdf>]
+Overfull \hbox (15.59267pt too wide) in paragraph at lines 109--110
+[][][][][][][][][][][][][][][][][][][][] 
+ []
+
+<Images/mision_ocho.pdf, id=79, 455.2441pt x 352.63283pt>
 File: Images/mision_ocho.pdf Graphic file (type pdf)
 <use Images/mision_ocho.pdf>
-Package pdftex.def Info: Images/mision_ocho.pdf  used on input line 119.
+Package pdftex.def Info: Images/mision_ocho.pdf  used on input line 121.
 (pdftex.def)             Requested size: 283.22162pt x 219.39415pt.
-<Images/mision_obstaculos.pdf, id=79, 455.2441pt x 253.24815pt>
+<Images/mision_obstaculos.pdf, id=80, 455.2441pt x 253.24815pt>
 File: Images/mision_obstaculos.pdf Graphic file (type pdf)
 <use Images/mision_obstaculos.pdf>
-Package pdftex.def Info: Images/mision_obstaculos.pdf  used on input line 131.
+Package pdftex.def Info: Images/mision_obstaculos.pdf  used on input line 133.
 (pdftex.def)             Requested size: 283.22162pt x 157.56094pt.
 File: Images/logo.png Graphic file (type png)
 <use Images/logo.png>
-Package pdftex.def Info: Images/logo.png  used on input line 135.
+Package pdftex.def Info: Images/logo.png  used on input line 137.
 (pdftex.def)             Requested size: 99.58464pt x 52.31514pt.
- [2 <./Images/mision_ocho.pdf>]
+[2 <./Images/mision_ocho.pdf>]
 File: Images/logo.png Graphic file (type png)
 <use Images/logo.png>
-Package pdftex.def Info: Images/logo.png  used on input line 135.
+Package pdftex.def Info: Images/logo.png  used on input line 137.
 (pdftex.def)             Requested size: 99.58464pt x 52.31514pt.
  [3 <./Images/mision_obstaculos.pdf>] (./main.aux
 LaTeX Info: Redefining \sptext on input line 14.
@@ -1439,7 +1443,7 @@ LaTeX2e <2023-11-01> patch level 1
 L3 programming layer <2024-01-22>
  ***********
 Package rerunfilecheck Info: File `main.out' has not changed.
-(rerunfilecheck)             Checksum: DE6388F40DE0DE5A4F2C984B4482E4A1;430.
+(rerunfilecheck)             Checksum: B1BEB10D47E56F2EF723095ACA4A83CB;507.
 Package logreq Info: Writing requests to 'main.run.xml'.
 \openout1 = `main.run.xml'.
 
@@ -1462,10 +1466,10 @@ f-dist/fonts/type1/public/amsfonts/cm/cmti12.pfb></usr/share/texlive/texmf-dist
 exmf/fonts/type1/public/lm/lmr10.pfb></usr/share/texmf/fonts/type1/public/lm/lm
 r12.pfb></usr/share/texmf/fonts/type1/public/lm/lmsy10.pfb></usr/share/texmf/fo
 nts/type1/public/lm/lmsy8.pfb>
-Output written on main.pdf (4 pages, 919405 bytes).
+Output written on main.pdf (4 pages, 920404 bytes).
 PDF statistics:
- 183 PDF objects out of 1000 (max. 8388607)
- 134 compressed objects within 2 object streams
+ 185 PDF objects out of 1000 (max. 8388607)
+ 136 compressed objects within 2 object streams
  16 named destinations out of 1000 (max. 500000)
  49 words of extra memory for PDF output out of 10000 (max. 10000000)
 

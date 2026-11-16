@@ -56,9 +56,9 @@
     
     \vspace*{\fill}
     
-    {\LARGE \textbf{Guía de laboratorio: Misiones con el robot}}\\[0.8cm]
+    {\LARGE \textbf{Misiones cambiando el modo de control del robot}}\\[0.8cm]
     {\large \textbf{Asignatura:} Control}\\[0.3cm]
-    {\large \textbf{Guía diseñada por:} \\ Leonardo Bermeo}
+    {\large \textbf{Guía diseñada por:} Leonardo Bermeo \\Dilan Torres}
     
     \vspace*{\fill}
     
@@ -78,7 +78,9 @@
 
 \section{Preliminar (15 minutos máximo)}
 
-Pruebe los 4 modos de control del robot. Para ello vea primero \href{https://www.youtube.com/watch?v=5Se6b7LLZ2M}{el video preparado en este enlace}. Puede ser de utilidad el pequeño manual en este enlace.
+\textcolor{red}{Baje la última \href{https://github.com/nebisman/RobotPIR.git}{versión del software del robot  en el repositorio} }\\
+
+Pruebe los 4 modos de control del robot. Para ello vea primero \href{https://www.youtube.com/watch?v=5Se6b7LLZ2M}{el video preparado en este enlace}. Puede ser de utilidad el \href{https://github.com/nebisman/control-material/blob/main/guias%20de%20laboratorio/practica%206/manual_modos/manual_modos.pdf}{pequeño manual en este enlace.}
 
 \begin{description}
 	\item [Modo 0:] Sintonice el modo 0 de balance para lograr un compromiso entre robustez. Ajuste una referencia referencia de giro de 180 y vea que pasa.
@@ -111,7 +113,7 @@ set_ss_controller(Klqr; mode=0, ref_pos=0.0, file="mi_control.c")
 
 \emph{Sugerencia:  es mejor usar los modos de velocidad que usar el modo de balance con referencias de ángulo y posición.}
 
-\section*{Segunda misión: ocho}
+\section*{Segunda misión: ocho (10 minutos)}
 
 Programe los modos de control para que el robot quede describiendo continuamente un 8 como el mostrado en la figura siguiente:
 \begin{figure}[H]
@@ -121,7 +123,7 @@ Programe los modos de control para que el robot quede describiendo continuamente
 	\label{mision2}
 \end{figure}
 
-\section{Misión 3: evasión de obstáculos}
+\section{Misión 3: evasión de obstáculos (40 minutos)}
 
 El que grupo que habiendo cumplido la misión 1 y la 2 se aproxime más al objetivo en la tercera misión, tendrá 5.0 en la nota del segundo parcial. Aqui está la figura: 
 

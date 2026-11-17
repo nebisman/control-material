@@ -1,5 +1,6 @@
 """Figura de misión: el robot describe sin parar un 8 formado por dos circunferencias
-de radio 0.5 m, tangentes en el centro del 8.
+tangentes en el centro del 8: la de giro a la derecha (tramos 1 y 4) de radio 0.5 m y la
+de giro a la izquierda (tramos 2 y 3) de radio 1 m.
 
 El inicio está en el extremo izquierdo del 8 (en la figura). El robot recorre el trazo
 azul (1: media vuelta girando a la derecha, 2: media vuelta girando a la izquierda), cruza
@@ -24,7 +25,8 @@ import mision_sprites as ms                                  # noqa: E402
 
 SALIDA = sys.argv[1] if len(sys.argv) > 1 else os.path.join(AQUI, "..", "Images", "mision_ocho.pdf")
 
-R = 0.5                 # radio de cada circunferencia [m]
+R_DER = 0.5             # radio de la circunferencia de giro a la derecha (tramos 1 y 4) [m]
+R_IZQ = 1.0             # radio de la circunferencia de giro a la izquierda (tramos 2 y 3) [m]
 CELDA = 0.25            # cuadrícula del piso [m]
 ms.PHI = -50            # rumbo inicial respecto a la cámara (-65: eje largo del 8 horizontal)
 ms.AMPLIA = 1.5         # robot ampliado para que se distinga
@@ -43,17 +45,22 @@ MITADES = ((+1, math.pi, 2 * math.pi, TRAZO_A, 1), (-1, 0.0, math.pi, TRAZO_A, 2
 INICIO = (+1, math.pi)
 
 
-def punto_circ(centro_y, sentido, s):
+def radio(sentido):
+    return R_DER if sentido > 0 else R_IZQ
+
+
+def centro_y(sentido):
+    return -R_DER if sentido > 0 else R_IZQ
+
+
+def punto_circ(_, sentido, s):
     """Posición y rumbo (delta, grados, + a la derecha) tras recorrer el ángulo s (rad)
     de la circunferencia. sentido = +1: derecha (horario), -1: izquierda (antihorario)."""
-    # La circunferencia de la derecha tiene centro (0, -R) y empieza en el origen
-    # (ángulo polar +90°); la de la izquierda tiene centro (0, +R) y empieza en -90°.
-    if sentido > 0:
-        a = math.pi / 2 - s
-        p = (R * math.cos(a), -R + R * math.sin(a))
-    else:
-        a = -math.pi / 2 + s
-        p = (R * math.cos(a), R + R * math.sin(a))
+    # La circunferencia de la derecha tiene centro (0, -R_DER) y empieza en el origen
+    # (ángulo polar +90°); la de la izquierda tiene centro (0, +R_IZQ) y empieza en -90°.
+    r, cy = radio(sentido), centro_y(sentido)
+    a = math.pi / 2 - s if sentido > 0 else -math.pi / 2 + s
+    p = (r * math.cos(a), cy + r * math.sin(a))
     return p, sentido * math.degrees(s)
 
 
@@ -100,21 +107,22 @@ def main():
         f = curva(sentido, sm - 0.1, sm + 0.02, 6)
         ms.flecha(ax, f[-2], f[-1], color, lw=3.0, z=4)
         p, _ = punto_circ(None, sentido, sm)
-        cy = -R if sentido > 0 else R
-        afuera = np.array((p[0], p[1] - cy)) * 0.14 / R
+        cy = centro_y(sentido)
+        afuera = np.array((p[0], p[1] - cy)) * 0.14 / radio(sentido)
         ax.text(*ms.proy(p[0] + afuera[0], p[1] + afuera[1]), r"\textbf{%d}" % num, fontsize=12,
                 color=color, ha="center", va="center", zorder=21,
                 bbox=dict(boxstyle="circle,pad=0.22", fc="white", ec=color, lw=1.3))
 
     # centros y radios
-    for cy, color, ang in ((-R, AZUL, -150), (R, MORADO, 150)):
+    for sentido, ang in ((+1, -150), (-1, 150)):
+        cy, r = centro_y(sentido), radio(sentido)
         cpx = ms.proy(0, cy)
         ax.plot(*cpx, marker="+", ms=9, mew=1.4, color="0.25", zorder=3)
-        borde = ms.proy(R * math.cos(math.radians(ang)), cy + R * math.sin(math.radians(ang)))
+        borde = ms.proy(r * math.cos(math.radians(ang)), cy + r * math.sin(math.radians(ang)))
         ax.annotate("", borde, cpx, arrowprops=dict(arrowstyle="-|>", color="0.25", lw=1.0,
                                                     mutation_scale=10, shrinkA=0, shrinkB=0), zorder=3)
         m = (cpx + borde) / 2
-        ax.text(*m, r"$R=0.5$\,m", fontsize=11, color="0.15", ha="center", va="center", zorder=6,
+        ax.text(*m, r"$R=%g$\,m" % r, fontsize=11, color="0.15", ha="center", va="center", zorder=6,
                 bbox=dict(boxstyle="round,pad=0.15", fc="white", ec="none", alpha=0.9))
 
     # robots: inicio (en el punto de tangencia) y a mitad de cada circunferencia; el más lejano primero

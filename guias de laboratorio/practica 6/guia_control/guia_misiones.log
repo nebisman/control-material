@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023/Debian) (preloaded format=pdflatex 2026.2.2)  16 NOV 2026 14:44
+This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023/Debian) (preloaded format=pdflatex 2026.2.2)  17 NOV 2026 15:41
 entering extended mode
  \write18 enabled.
  %&-line parsing enabled.
@@ -1249,9 +1249,10 @@ File: lstmisc.sty 2023/02/27 1.9 (Carsten Heinz)
 File: listings.cfg 2023/02/27 1.9 listings configuration
 ))
 Package: listings 2023/02/27 1.9 (Carsten Heinz)
+Package hyperref Info: Option `colorlinks' set `true' on input line 57.
 
 
-Package csquotes Warning: Load 'inputenc' before 'csquotes' on input line 50.
+Package csquotes Warning: Load 'inputenc' before 'csquotes' on input line 58.
 
 Package csquotes Info: Checking for multilingual support...
 Package csquotes Info: ... found 'babel' package.
@@ -1266,26 +1267,26 @@ LaTeX Info: Redefining \% on input line 14.
 )
 \openout1 = `guia_misiones.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 50.
-LaTeX Font Info:    ... okay on input line 50.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 50.
-LaTeX Font Info:    ... okay on input line 50.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 50.
-LaTeX Font Info:    ... okay on input line 50.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 50.
-LaTeX Font Info:    ... okay on input line 50.
-LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 50.
-LaTeX Font Info:    ... okay on input line 50.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 50.
-LaTeX Font Info:    ... okay on input line 50.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 50.
-LaTeX Font Info:    ... okay on input line 50.
-LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 50.
-LaTeX Font Info:    ... okay on input line 50.
-LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 50.
-LaTeX Font Info:    ... okay on input line 50.
-LaTeX Info: Redefining \. on input line 50.
-LaTeX Info: Redefining \% on input line 50.
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 58.
+LaTeX Font Info:    ... okay on input line 58.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 58.
+LaTeX Font Info:    ... okay on input line 58.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 58.
+LaTeX Font Info:    ... okay on input line 58.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 58.
+LaTeX Font Info:    ... okay on input line 58.
+LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 58.
+LaTeX Font Info:    ... okay on input line 58.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 58.
+LaTeX Font Info:    ... okay on input line 58.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 58.
+LaTeX Font Info:    ... okay on input line 58.
+LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 58.
+LaTeX Font Info:    ... okay on input line 58.
+LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 58.
+LaTeX Font Info:    ... okay on input line 58.
+LaTeX Info: Redefining \. on input line 58.
+LaTeX Info: Redefining \% on input line 58.
 
 *geometry* driver: auto-detecting
 *geometry* detected driver: pdftex
@@ -1363,9 +1364,9 @@ Package biblatex Info: Trying to load bibliographic data...
 Package biblatex Info: ... file 'guia_misiones.bbl' found.
 
 (./guia_misiones.bbl)
-Package biblatex Info: Reference section=0 on input line 50.
-Package biblatex Info: Reference segment=0 on input line 50.
-Package hyperref Info: Link coloring OFF on input line 50.
+Package biblatex Info: Reference section=0 on input line 58.
+Package biblatex Info: Reference segment=0 on input line 58.
+Package hyperref Info: Link coloring ON on input line 58.
  (./guia_misiones.out) (./guia_misiones.out)
 \@outlinefile=\write5
 \openout5 = `guia_misiones.out'.
@@ -1374,68 +1375,68 @@ Package hyperref Info: Link coloring OFF on input line 50.
 <Images/logo.png, id=15, 812.03375pt x 426.59375pt>
 File: Images/logo.png Graphic file (type png)
 <use Images/logo.png>
-Package pdftex.def Info: Images/logo.png  used on input line 55.
+Package pdftex.def Info: Images/logo.png  used on input line 63.
 (pdftex.def)             Requested size: 128.0374pt x 67.26047pt.
  [1
 
 {/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map} <./Images/logo.png>]
-Underfull \hbox (badness 10000) in paragraph at lines 81--82
+Underfull \hbox (badness 10000) in paragraph at lines 89--90
 
  []
 
-LaTeX Font Info:    Trying to load font information for U+msa on input line 88.
+LaTeX Font Info:    Trying to load font information for U+msa on input line 96.
 
 (/usr/share/texlive/texmf-dist/tex/latex/amsfonts/umsa.fd
 File: umsa.fd 2013/01/14 v3.01 AMS symbols A
 )
-LaTeX Font Info:    Trying to load font information for U+msb on input line 88.
+LaTeX Font Info:    Trying to load font information for U+msb on input line 96.
 
 
 (/usr/share/texlive/texmf-dist/tex/latex/amsfonts/umsb.fd
 File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 )
-<Images/mision_avanzar_girar2.pdf, id=30, 455.2441pt x 300.99867pt>
+<Images/mision_avanzar_girar2.pdf, id=30, 455.2441pt x 240.07611pt>
 File: Images/mision_avanzar_girar2.pdf Graphic file (type pdf)
 <use Images/mision_avanzar_girar2.pdf>
-Package pdftex.def Info: Images/mision_avanzar_girar2.pdf  used on input line 9
-8.
-(pdftex.def)             Requested size: 283.22162pt x 187.26942pt.
+Package pdftex.def Info: Images/mision_avanzar_girar2.pdf  used on input line 1
+06.
+(pdftex.def)             Requested size: 283.22162pt x 149.36583pt.
+
+Overfull \hbox (15.59267pt too wide) in paragraph at lines 117--118
+[][][][][][][][][][][][][][][][][][][][] 
+ []
+
 File: Images/logo.png Graphic file (type png)
 <use Images/logo.png>
-Package pdftex.def Info: Images/logo.png  used on input line 108.
+Package pdftex.def Info: Images/logo.png  used on input line 120.
 (pdftex.def)             Requested size: 99.58464pt x 52.31514pt.
 
 pdfTeX warning (ext4): destination with the same identifier (name{page.1}) has 
 been already used, duplicate ignored
 <to be read again> 
                    \relax 
-l.108 	\begin{lstlisting}[nolol]
-                                 [1 <./Images/mision_avanzar_girar2.pdf>]
-Overfull \hbox (15.59267pt too wide) in paragraph at lines 109--110
-[][][][][][][][][][][][][][][][][][][][] 
- []
-
-<Images/mision_ocho.pdf, id=79, 455.2441pt x 352.63283pt>
+l.120 \end{enumerate}
+                      [1 <./Images/mision_avanzar_girar2.pdf>]
+<Images/mision_ocho.pdf, id=84, 455.2441pt x 335.59285pt>
 File: Images/mision_ocho.pdf Graphic file (type pdf)
 <use Images/mision_ocho.pdf>
-Package pdftex.def Info: Images/mision_ocho.pdf  used on input line 121.
-(pdftex.def)             Requested size: 283.22162pt x 219.39415pt.
-<Images/mision_obstaculos.pdf, id=80, 455.2441pt x 253.24815pt>
+Package pdftex.def Info: Images/mision_ocho.pdf  used on input line 129.
+(pdftex.def)             Requested size: 283.22162pt x 208.79254pt.
+<Images/mision_obstaculos.pdf, id=85, 455.2441pt x 342.30927pt>
 File: Images/mision_obstaculos.pdf Graphic file (type pdf)
 <use Images/mision_obstaculos.pdf>
-Package pdftex.def Info: Images/mision_obstaculos.pdf  used on input line 133.
-(pdftex.def)             Requested size: 283.22162pt x 157.56094pt.
+Package pdftex.def Info: Images/mision_obstaculos.pdf  used on input line 141.
+(pdftex.def)             Requested size: 283.22162pt x 212.97124pt.
 File: Images/logo.png Graphic file (type png)
 <use Images/logo.png>
-Package pdftex.def Info: Images/logo.png  used on input line 137.
+Package pdftex.def Info: Images/logo.png  used on input line 145.
 (pdftex.def)             Requested size: 99.58464pt x 52.31514pt.
-[2 <./Images/mision_ocho.pdf>]
+ [2 <./Images/mision_ocho.pdf>]
 File: Images/logo.png Graphic file (type png)
 <use Images/logo.png>
-Package pdftex.def Info: Images/logo.png  used on input line 137.
+Package pdftex.def Info: Images/logo.png  used on input line 145.
 (pdftex.def)             Requested size: 99.58464pt x 52.31514pt.
- [3 <./Images/mision_obstaculos.pdf>]
-(./guia_misiones.aux
+ [3 <./Images/mision_obstaculos.pdf>] (./guia_misiones.aux
 LaTeX Info: Redefining \sptext on input line 14.
 LaTeX Info: Redefining \. on input line 14.
 LaTeX Info: Redefining \% on input line 14.
@@ -1453,7 +1454,7 @@ Package logreq Info: Writing requests to 'guia_misiones.run.xml'.
 Here is how much of TeX's memory you used:
  52280 strings out of 474222
  1163647 string characters out of 5748734
- 2205374 words of memory out of 5000000
+ 2206380 words of memory out of 5000000
  73936 multiletter control sequences out of 15000+600000
  565667 words of font info for 64 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
@@ -1468,10 +1469,10 @@ f-dist/fonts/type1/public/amsfonts/cm/cmti12.pfb></usr/share/texlive/texmf-dist
 exmf/fonts/type1/public/lm/lmr10.pfb></usr/share/texmf/fonts/type1/public/lm/lm
 r12.pfb></usr/share/texmf/fonts/type1/public/lm/lmsy10.pfb></usr/share/texmf/fo
 nts/type1/public/lm/lmsy8.pfb>
-Output written on guia_misiones.pdf (4 pages, 920407 bytes).
+Output written on guia_misiones.pdf (4 pages, 774808 bytes).
 PDF statistics:
- 185 PDF objects out of 1000 (max. 8388607)
- 136 compressed objects within 2 object streams
+ 189 PDF objects out of 1000 (max. 8388607)
+ 138 compressed objects within 2 object streams
  16 named destinations out of 1000 (max. 500000)
  49 words of extra memory for PDF output out of 10000 (max. 10000000)
 

@@ -1,15 +1,20 @@
 """Figura de misión con obstáculos (boceto mision3.jpeg).
 
-Recorrido, en el marco de la misión (x adelante al inicio, y a la izquierda):
+Con origen en el inicio, x en la dirección en que arranca el robot e y positiva hacia abajo
+(a la derecha del rumbo inicial), el fin queda en (4.25, 1.50) m.
+
+Recorrido, en el marco interno de la misión (x adelante al inicio, y a la izquierda):
   1. avanzar 1 m
   2. girar 90° a la derecha en el sitio
   3. semicircunferencia a la izquierda de radio 0.5 m alrededor del primer obstáculo
   4. avanzar 0.5 m
   5. semicircunferencia a la derecha de radio 0.5 m (centro a 0.5 m del segundo obstáculo)
-  6. avanzar 1 m
-  7. girar 90° a la izquierda en el sitio
-  8. avanzar 1 m y parar
-Los tres obstáculos (cajas de 30 cm, a 1 m entre sí) están alineados con el primer tramo.
+  6. avanzar 1.5 m
+  7. cuarto de circunferencia a la izquierda de radio 0.5 m alrededor del tercer obstáculo
+     (lo bordea por la derecha)
+  8. avanzar 0.75 m y parar
+Los dos primeros obstáculos (cajas de 30 cm, a 1 m entre sí) están alineados con el primer
+tramo; el tercero está 1 m más abajo.
 Solo se rotulan el inicio y el fin; ANOTACIONES = True agrega los números de los pasos,
 la leyenda, los radios y la nota de la cuadrícula.
 Usa la proyección y los sprites en picada de mision_sprites.py.
@@ -47,9 +52,11 @@ D1 = (1.0, 0.0)
 E1 = (1.0, 0.5)
 O2 = (1.5, 0.5)                 # centro de la segunda semicircunferencia
 F = (2.0, 0.5)
-G = (2.0, -0.5)                 # giro a la izquierda
-P_FIN = (3.0, -0.5)
-OBSTACULOS = ((0.5, 0.0), (1.5, 0.0), (2.5, 0.0))      # a 1 m entre sí
+G = (2.0, -1.0)                 # inicio del cuarto de circunferencia alrededor del tercer obstáculo
+O3 = (2.5, -1.0)                # centro del cuarto de circunferencia (= tercer obstáculo)
+H = (2.5, -1.5)
+P_FIN = (3.25, -1.5)            # (4.25, 1.50) m desde el inicio, con y hacia abajo
+OBSTACULOS = ((0.5, 0.0), (1.5, 0.0), O3)              # el tercero, 1 m más abajo
 ANOTACIONES = False
 
 
@@ -64,7 +71,9 @@ def recorrido():
     pts += arco(O1, 180, 360)          # semicircunferencia a la izquierda (antihoraria)
     pts += [E1]
     pts += arco(O2, 180, 0)            # semicircunferencia a la derecha (horaria)
-    pts += [G, P_FIN]
+    pts += [G]
+    pts += arco(O3, 180, 270)          # cuarto de circunferencia a la izquierda (antihoraria)
+    pts += [P_FIN]
     return pts
 
 
@@ -144,19 +153,17 @@ def main():
 
     # recorrido y flechas de sentido
     ax.plot(camino[:, 0], camino[:, 1], color=AZUL, lw=2.8, solid_joinstyle="round", zorder=2)
-    for a, b in ((P_INI, C1), (D1, E1), (F, G), (G, P_FIN)):
+    for a, b in ((P_INI, C1), (D1, E1), (F, G), (H, P_FIN)):
         m = np.array(a) + 0.55 * (np.array(b) - np.array(a))
         u = (np.array(b) - np.array(a)) / np.linalg.norm(np.array(b) - np.array(a))
         ms.flecha(ax, ms.proy(*(m - 0.12 * u)), ms.proy(*(m + 0.02 * u)), AZUL, lw=2.8)
-    for centro, a in ((O1, 270), (O2, 90)):
-        s = 1 if centro is O1 else -1                         # antihoraria / horaria
+    for centro, a, s in ((O1, 270, 1), (O2, 90, -1), (O3, 229, 1)):   # s = 1 antihoraria, -1 horaria
         p = [ms.proy(centro[0] + R * math.cos(math.radians(t)), centro[1] + R * math.sin(math.radians(t)))
              for t in (a - s * 8, a + s * 2)]
         ms.flecha(ax, p[0], p[1], AZUL, lw=2.8)
 
     # giros en el sitio
     giro(ax, C1, 150, 20)               # 90° a la derecha (horario)
-    giro(ax, G, 110, 330)               # 90° a la izquierda (antihorario)
 
     if ANOTACIONES:
         # radios
@@ -180,9 +187,9 @@ def main():
         numero(ax, (O1[0], O1[1] - R - 0.3), 3, AZUL)
         numero(ax, (0.78, 0.25), 4, AZUL)
         numero(ax, (O2[0] + 0.7 * math.cos(math.radians(40)), O2[1] + 0.7 * math.sin(math.radians(40))), 5, AZUL)
-        numero(ax, (2.25, 0.05), 6, AZUL)
-        numero(ax, (1.68, -0.82), 7, NARANJA)
-        numero(ax, (2.55, -0.8), 8, AZUL)
+        numero(ax, (1.72, -0.45), 6, AZUL)
+        numero(ax, (O3[0] + 0.8 * math.cos(math.radians(220)), O3[1] + 0.8 * math.sin(math.radians(220))), 7, AZUL)
+        numero(ax, (2.88, -1.78), 8, AZUL)
 
     # rótulos
     caja_txt = dict(boxstyle="round,pad=0.3", lw=1.0)
@@ -202,8 +209,8 @@ def main():
 
         pasos = (r"\textbf{1} avanzar 1\,m", r"\textbf{2} girar 90$^\circ$ a la derecha",
                  r"\textbf{3} semicircunferencia a la izquierda", r"\textbf{4} avanzar 0.5\,m",
-                 r"\textbf{5} semicircunferencia a la derecha", r"\textbf{6} avanzar 1\,m",
-                 r"\textbf{7} girar 90$^\circ$ a la izquierda", r"\textbf{8} avanzar 1\,m y parar")
+                 r"\textbf{5} semicircunferencia a la derecha", r"\textbf{6} avanzar 1.5\,m",
+                 r"\textbf{7} cuarto de circunferencia a la izquierda", r"\textbf{8} avanzar 0.75\,m y parar")
         leyenda = (r"\begin{tabular}{@{}l@{\hspace{1.5em}}l@{}}"
                    + r" \\[2pt] ".join(r"%s & %s" % (pasos[k], pasos[k + 4]) for k in range(4))
                    + r"\end{tabular}")

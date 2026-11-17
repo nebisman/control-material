@@ -1,6 +1,7 @@
 """Figura de una misión del robot con los sprites en picada (vista oblicua).
 
-Misión: avanzar 2 m, girar 90° a la derecha, avanzar 2 m y parar.
+Misión: avanzar 2 m, girar 90° a la derecha, avanzar 2 m, girar 90° a la izquierda,
+avanzar 1 m y parar.
 Piso con cuadrícula de 25 cm (líneas de 1 m más marcadas); el recorrido está a escala
 y el robot se dibuja ampliado AMPLIA veces para que se distinga.
 
@@ -28,7 +29,7 @@ ANCHO = V["ancho_m"]                      # ancho real que cubre cada sprite [m]
 PASO = V["paso_grados"]
 
 PHI = 50                                  # rumbo inicial respecto a la cámara (grados, antihorario)
-L1, L2 = 2.0, 2.0                         # tramos de la misión [m]
+L1, L2, L3 = 2.0, 2.0, 1.0                # tramos de la misión [m]
 CELDA = 0.5                              # cuadrícula del piso [m]
 AMPLIA = 1.8                              # el robot se dibuja ampliado para que se distinga
 
@@ -81,16 +82,20 @@ def flecha(ax, p, q, color, lw=2.6, z=4):
                                  shrinkA=0, shrinkB=0, zorder=z))
 
 
-def cota(ax, a, b, desplaz, texto):
-    """Línea de cota paralela al tramo a-b (marco de la misión), desplazada 'desplaz' [m]."""
+def cota(ax, a, b, desplaz, texto, lineas=(True, True)):
+    """Línea de cota paralela al tramo a-b (marco de la misión), desplazada 'desplaz' [m].
+
+    'lineas' indica en qué extremos se dibuja la línea de extensión (se omite donde
+    coincidiría con el recorrido)."""
     a, b = np.array(a), np.array(b)
     t = (b - a) / np.linalg.norm(b - a)
     n = np.array((-t[1], t[0])) * desplaz
     pa, pb = proy(*(a + n)), proy(*(b + n))
     ax.add_patch(FancyArrowPatch(pa, pb, arrowstyle="<|-|>", mutation_scale=10, color="0.25", lw=1.0,
                                  shrinkA=0, shrinkB=0, zorder=3))
-    for p in (a, b):
-        ax.plot(*zip(proy(*(p + n * 0.25)), proy(*(p + n * 1.15))), color="0.25", lw=0.8, zorder=3)
+    for p, dibujar in zip((a, b), lineas):
+        if dibujar:
+            ax.plot(*zip(proy(*(p + n * 0.25)), proy(*(p + n * 1.15))), color="0.25", lw=0.8, zorder=3)
     m, d = (pa + pb) / 2, pb - pa
     ang = math.degrees(math.atan2(d[1], d[0]))
     if ang > 90:
@@ -106,12 +111,18 @@ def cota(ax, a, b, desplaz, texto):
 def main():
     plt.rcParams.update({"text.usetex": True, "font.family": "serif",
                          "text.latex.preamble": r"\usepackage[T1]{fontenc}\usepackage{lmodern}"})
-    P0, P1, P2 = (0.0, 0.0), (L1, 0.0), (L1, -L2)
+    P0, P1, P2, P3 = (0.0, 0.0), (L1, 0.0), (L1, -L2), (L1 + L3, -L2)
 
     # encuadre: recorrido y robots con margen
-    pts = np.array([proy(*p) for p in (P0, P1, P2)])
+    pts = np.array([proy(*p) for p in (P0, P1, P2, P3)])
     x0, y0 = pts.min(axis=0) - (0.62, 0.42)
-    x1, y1 = pts.max(axis=0) + (0.62, 0.62)
+    x1, y1 = pts.max(axis=0) + (0.62, 0.74)
+    # rótulos del último tramo, ubicados en el plano de la figura respecto a P2 y P3
+    T4 = proy(*P2) + (-1.12, -0.24)
+    T5 = proy(*P3) + (-0.08, 0.47)
+    T6 = proy(*P3) + (0.70, -0.32)
+    x1 = max(x1, T6[0] + 0.42)
+    y0 = min(y0, T4[1] - 0.12, proy(*P2)[1] - 0.52)
     ancho_cm = 16.0
     fig = plt.figure(figsize=(ancho_cm / 2.54, ancho_cm / 2.54 * (y1 - y0) / (x1 - x0)))
     ax = fig.add_axes((0, 0, 1, 1))
@@ -134,25 +145,32 @@ def main():
             color="0.2", zorder=8, bbox=dict(boxstyle="round,pad=0.2", fc="white", ec="0.6", lw=0.5))
 
     # recorrido
-    ax.plot(*zip(*[proy(*p) for p in (P0, P1, P2)]), color=AZUL, lw=2.6, solid_joinstyle="round", zorder=2)
+    ax.plot(*zip(*[proy(*p) for p in (P0, P1, P2, P3)]), color=AZUL, lw=2.6, solid_joinstyle="round", zorder=2)
     flecha(ax, proy(0.55, 0), proy(1.15, 0), AZUL)
     flecha(ax, proy(L1, -0.65), proy(L1, -1.25), AZUL)
+    flecha(ax, proy(L1 + 0.34, -L2), proy(L1 + 0.66, -L2), AZUL)
 
-    # giro de 90° a la derecha en la esquina (horario visto desde arriba)
+    # giros de 90° en las esquinas: a la derecha (horario) en P1, a la izquierda (antihorario) en P2
     R = 0.42
-    angs = np.radians(np.linspace(165, -55, 40))
-    arco = np.array([proy(L1 + R * math.cos(a), R * math.sin(a)) for a in angs])
-    ax.plot(arco[:-1, 0], arco[:-1, 1], color=NARANJA, lw=2.2, zorder=5)
-    flecha(ax, arco[-3], arco[-1], NARANJA, lw=2.2, z=5)
+
+    def giro(centro, a0, a1):
+        angs = np.radians(np.linspace(a0, a1, 40))
+        arco = np.array([proy(centro[0] + R * math.cos(a), centro[1] + R * math.sin(a)) for a in angs])
+        ax.plot(arco[:-1, 0], arco[:-1, 1], color=NARANJA, lw=2.2, zorder=5)
+        flecha(ax, arco[-3], arco[-1], NARANJA, lw=2.2, z=5)
+
+    giro(P1, 165, -55)
+    giro(P2, 110, 240)
 
     # robots: el más lejano primero
-    poses = [(P0, 0, VERDE), (P1, 45, NARANJA), (P2, 90, ROJO)]
+    poses = [(P0, 0, VERDE), (P1, 45, NARANJA), (P2, 45, NARANJA), (P3, 0, ROJO)]
     for i, (p, d, _) in enumerate(sorted(poses, key=lambda q: -profundidad(*q[0]))):
         robot(ax, p[0], p[1], d, z0=10 + i)
 
     # cotas
     cota(ax, P0, P1, 0.42, r"2\,m")
-    cota(ax, P1, P2, 0.42, r"2\,m")
+    cota(ax, P1, P2, 0.42, r"2\,m", lineas=(True, False))
+    cota(ax, P2, P3, -0.42, r"1\,m")
 
     # rótulos de la misión
     caja = dict(boxstyle="round,pad=0.3", lw=1.0)
@@ -166,7 +184,13 @@ def main():
                 arrowprops=dict(arrowstyle="-", color=NARANJA, lw=1.0))
     ax.text(*proy(L1 - 0.48, -1.35), r"\textbf{3.} avanzar 2\,m", fontsize=12, color=AZUL, ha="center",
             zorder=20, bbox=dict(fc="white", ec=AZUL, **caja))
-    ax.annotate(r"\textbf{4.} parar", proy(*P2), xytext=proy(L1 - 0.95, -L2 + 0.05), fontsize=12,
+    ax.annotate(r"\textbf{4.} girar 90$^\circ$ a la izquierda", proy(L1 + R * math.cos(math.radians(200)),
+                -L2 + R * math.sin(math.radians(200))), xytext=T4,
+                fontsize=12, color=NARANJA, ha="center", zorder=20, bbox=dict(fc="white", ec=NARANJA, **caja),
+                arrowprops=dict(arrowstyle="-", color=NARANJA, lw=1.0))
+    ax.text(*T5, r"\textbf{5.} avanzar 1\,m", fontsize=12, color=AZUL, ha="center",
+            zorder=20, bbox=dict(fc="white", ec=AZUL, **caja))
+    ax.annotate(r"\textbf{6.} parar", proy(*P3), xytext=T6, fontsize=12,
                 color=ROJO, ha="center", zorder=20, bbox=dict(fc="white", ec=ROJO, **caja),
                 arrowprops=dict(arrowstyle="-", color=ROJO, lw=1.0, shrinkB=12))
 
